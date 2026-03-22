@@ -1,0 +1,1509 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" id="htmlRoot">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gold Analysis XAU/USD · تحليل الذهب</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Cairo:wght@300;400;600;700;900&family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+/* ═══════════════════════════════════════════════════════════
+   DARK GOLD THEME — DEFAULT
+═══════════════════════════════════════════════════════════ */
+:root {
+  --gold:         #C9A84C;
+  --gold-light:   #E8C96B;
+  --bg:           #0A0A0F;
+  --bg2:          #12121A;
+  --bg3:          #1A1A28;
+  --panel:        #16161F;
+  --border:       rgba(201,168,76,0.25);
+  --red:          #E05252;
+  --green:        #4ECBA5;
+  --blue:         #5B8DEF;
+  --text:         #E8E0CC;
+  --muted:        #7A7A90;
+  --card-bg:      #1A1A28;
+  --card-border:  rgba(201,168,76,0.2);
+  --shadow:       0 8px 32px rgba(0,0,0,0.5);
+  --radius:       14px;
+  --font-ar:      'Cairo','Tajawal',sans-serif;
+  --font-en:      'Inter',sans-serif;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LIQUID GLASS THEME — deep space edition
+═══════════════════════════════════════════════════════════ */
+body.liquid {
+  --gold:        #ffd166;
+  --gold-light:  #ffe08a;
+  --bg:          transparent;
+  --bg2:         rgba(255,255,255,0.04);
+  --bg3:         rgba(255,255,255,0.08);
+  --panel:       rgba(255,255,255,0.05);
+  --border:      rgba(255,255,255,0.16);
+  --card-bg:     rgba(255,255,255,0.05);
+  --card-border: rgba(255,255,255,0.16);
+  --text:        rgba(255,255,255,0.95);
+  --muted:       rgba(255,255,255,0.48);
+  --red:         #ff7eb3;
+  --green:       #67e8b0;
+  --blue:        #93c5fd;
+  --shadow:      0 8px 32px rgba(0,0,0,0.5);
+}
+
+/* Deep space animated background */
+body.liquid::after {
+  content: '';
+  position: fixed; inset: 0; z-index: -2; pointer-events: none;
+  background:
+    radial-gradient(ellipse 90% 60% at 50% -5%,  rgba(88,28,220,0.65)  0%, transparent 55%),
+    radial-gradient(ellipse 55% 50% at 92% 28%,  rgba(14,165,233,0.5)  0%, transparent 50%),
+    radial-gradient(ellipse 45% 55% at 4%  82%,  rgba(217,70,239,0.38) 0%, transparent 50%),
+    radial-gradient(ellipse 65% 40% at 78% 92%,  rgba(16,185,129,0.28) 0%, transparent 50%),
+    linear-gradient(165deg, #02001a 0%, #060232 30%, #090420 60%, #010214 100%);
+  animation: lqShift 24s ease-in-out infinite alternate;
+}
+@keyframes lqShift {
+  0%   { filter: hue-rotate(0deg)   brightness(1);    }
+  40%  { filter: hue-rotate(18deg)  brightness(1.07); }
+  100% { filter: hue-rotate(-12deg) brightness(0.95); }
+}
+
+/* Soft floating orbs */
+body.liquid .cover::after {
+  content: '';
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(circle 350px at 22% 30%, rgba(139,92,246,0.22) 0%, transparent 70%),
+    radial-gradient(circle 220px at 80% 18%, rgba(56,189,248,0.18) 0%, transparent 70%),
+    radial-gradient(circle 280px at 14% 78%, rgba(236,72,153,0.15) 0%, transparent 70%),
+    radial-gradient(circle 200px at 84% 78%, rgba(52,211,153,0.15) 0%, transparent 70%);
+  animation: orbDrift 30s ease-in-out infinite alternate;
+  border-radius: inherit;
+}
+@keyframes orbDrift {
+  0%   { transform: translate(0,0); }
+  50%  { transform: translate(12px,-8px); }
+  100% { transform: translate(-6px,14px); }
+}
+
+/* Glass cards */
+body.liquid .panel,
+body.liquid .stat-card,
+body.liquid .chart-box,
+body.liquid .factor-card,
+body.liquid .scenario-card,
+body.liquid .aed-hero,
+body.liquid .decision-box,
+body.liquid .ccard,
+body.liquid .prompt-box,
+body.liquid .update-bar {
+  background: rgba(255,255,255,0.055) !important;
+  backdrop-filter: blur(22px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(160%) !important;
+  border: 1px solid rgba(255,255,255,0.14) !important;
+  box-shadow:
+    0 4px 28px rgba(0,0,0,0.45),
+    inset 0 1px 0 rgba(255,255,255,0.16),
+    inset 0 -1px 0 rgba(0,0,0,0.14) !important;
+}
+body.liquid .stat-card:hover,
+body.liquid .factor-card:hover {
+  background: rgba(255,255,255,0.1) !important;
+  border-color: rgba(255,255,255,0.26) !important;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.28) !important;
+}
+body.liquid .factor-card       { border-right: 3px solid rgba(255,209,102,0.7) !important; }
+html[dir="ltr"] body.liquid .factor-card { border-right:none !important; border-left:3px solid rgba(255,209,102,0.7) !important; }
+
+body.liquid .cover             { background: transparent !important; }
+body.liquid .cover-grid        { opacity: .06; }
+body.liquid table              { color: var(--text); }
+body.liquid thead              { background: rgba(255,255,255,0.04) !important; }
+body.liquid td                 { border-color: rgba(255,255,255,0.05) !important; }
+body.liquid tr:hover td        { background: rgba(255,255,255,0.035) !important; }
+body.liquid .divider span      { background: transparent; }
+body.liquid .prompt-text       { color: #a5c8ff; }
+body.liquid #tooltip-global    { background:rgba(2,0,24,0.93); backdrop-filter:blur(22px); border-color:rgba(255,255,255,0.2); color:rgba(255,255,255,0.92); }
+body.liquid .ctrl-bar          { background:rgba(255,255,255,0.07); border-color:rgba(255,255,255,0.2); box-shadow:0 4px 20px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.16); }
+body.liquid .ctrl-btn.active   { background:rgba(255,255,255,0.13); color:#fff; border-color:rgba(255,255,255,0.26); }
+body.liquid .dec-box           { background:rgba(255,209,102,0.05) !important; border-color:rgba(255,209,102,0.35) !important; }
+body.liquid .aed-hero          { background:rgba(255,209,102,0.05) !important; border-color:rgba(255,209,102,0.3)  !important; }
+body.liquid .sc-bull           { background:rgba(103,232,176,0.05) !important; border-color:rgba(103,232,176,0.18) !important; }
+body.liquid .sc-bear           { background:rgba(255,126,179,0.05) !important; border-color:rgba(255,126,179,0.18) !important; }
+body.liquid .footer            { background:rgba(255,255,255,0.02); border-color:rgba(255,255,255,0.08); }
+body.liquid::before            { display:none; }
+
+/* ═══════════════════════════════════════════════════════════
+   BASE
+═══════════════════════════════════════════════════════════ */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-ar);
+  direction: rtl;
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: color .4s;
+}
+body::before {
+  content:'';
+  position:fixed; inset:0; z-index:0; pointer-events:none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity:.35;
+}
+/* Dark bg for non-liquid mode */
+body:not(.liquid) { background: var(--bg); }
+body:not(.liquid)::after { display:none; }
+
+/* EN direction overrides */
+html[dir="ltr"] body { direction: ltr; }
+html[dir="ltr"] .factor-card { border-right: none; border-left: 4px solid var(--gold); }
+html[dir="ltr"] body.liquid .factor-card { border-left: 3px solid var(--gold) !important; border-right: none !important; }
+html[dir="ltr"] .factor-card:hover { transform: translateX(4px); }
+html[dir="ltr"] .prob-ring-row { flex-direction: row-reverse; }
+html[dir="ltr"] .section-header { flex-direction: row; }
+html[dir="ltr"] table th { text-align: left; }
+html[dir="ltr"] .cover-price-card::before { content:''; }
+
+/* ═══════════════════════════════════════════════════════════
+   CONTROL BAR — centered at top
+═══════════════════════════════════════════════════════════ */
+.ctrl-bar {
+  position: fixed;
+  top: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(10,10,15,0.6);
+  border: 1px solid rgba(201,168,76,0.3);
+  border-radius: 50px;
+  padding: 2px 6px;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+}
+body.liquid .ctrl-bar {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.25);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.2);
+}
+
+.ctrl-btn {
+  background: transparent;
+  border: none;
+  border-radius: 40px;
+  padding: 5px 14px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all .25s;
+  white-space: nowrap;
+}
+.ctrl-btn:hover { color: var(--text); background: rgba(255,255,255,0.08); }
+.ctrl-btn.active {
+  background: rgba(201,168,76,0.18);
+  color: var(--gold-light);
+  border: 1px solid rgba(201,168,76,0.35);
+}
+body.liquid .ctrl-btn.active {
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  border-color: rgba(255,255,255,0.3);
+}
+.ctrl-sep {
+  width: 1px; height: 20px;
+  background: rgba(255,255,255,0.12);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   AUTO-UPDATE BAR
+═══════════════════════════════════════════════════════════ */
+.update-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 9990;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 8px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--muted);
+  backdrop-filter: blur(12px);
+}
+.u-status { display:flex; align-items:center; gap:8px; }
+.u-dot {
+  width:8px; height:8px; border-radius:50%; background:var(--green);
+  animation: ublink 2s infinite;
+}
+.u-dot.loading { background:var(--gold); animation:uspinDot 0.8s linear infinite; }
+.u-dot.error   { background:var(--red); animation:none; }
+@keyframes ublink    { 0%,100%{opacity:1} 50%{opacity:.25} }
+@keyframes uspinDot  { 0%{transform:scale(1)} 50%{transform:scale(1.7)} 100%{transform:scale(1)} }
+.u-time { color:var(--gold); font-weight:700; }
+.u-btn {
+  background: rgba(201,168,76,0.1); border: 1px solid var(--border);
+  border-radius:20px; padding:3px 12px; font-size:11px; color:var(--gold);
+  cursor:pointer; font-family:inherit; transition:all .2s;
+}
+.u-btn:hover { background:rgba(201,168,76,0.22); }
+.u-prog {
+  position:absolute; bottom:0; left:0; height:2px;
+  background:linear-gradient(90deg,var(--gold),var(--gold-light));
+  transition:width 1s linear;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TOOLTIP — fixed-position via JS, never overlaps
+═══════════════════════════════════════════════════════════ */
+.has-tip { position:static; cursor:help; }
+#tooltip-global {
+  display: none;
+  position: fixed;
+  z-index: 99999;
+  background: rgba(10,10,20,0.97);
+  border: 1px solid rgba(201,168,76,0.4);
+  border-radius: 12px;
+  padding: 14px 16px;
+  width: 260px;
+  font-size: 12px;
+  line-height: 1.75;
+  color: #E8E0CC;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+  pointer-events: none;
+  text-align: right;
+  font-family: 'Cairo','Tajawal',sans-serif;
+  transition: opacity .15s;
+}
+html[dir="ltr"] #tooltip-global { text-align: left; }
+body.liquid #tooltip-global {
+  background: rgba(5,5,15,0.92);
+  backdrop-filter: blur(20px);
+  border-color: rgba(255,255,255,0.25);
+  color: #fff;
+}
+.tip-verdict {
+  display:inline-block; margin-top:7px; padding:2px 10px;
+  border-radius:20px; font-size:11px; font-weight:700;
+}
+.tv-bull { background:rgba(78,203,165,0.18); color:var(--green); }
+.tv-bear { background:rgba(224,82,82,0.18);  color:var(--red);   }
+.tv-neut { background:rgba(201,168,76,0.18); color:var(--gold);  }
+
+/* ═══════════════════════════════════════════════════════════
+   COVER
+═══════════════════════════════════════════════════════════ */
+.cover {
+  min-height:100vh; display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  padding:90px 40px 60px; position:relative; overflow:hidden;
+  background: radial-gradient(ellipse 80% 60% at 50% 0%,rgba(201,168,76,0.18) 0%,transparent 70%),
+              radial-gradient(ellipse 40% 40% at 80% 80%,rgba(201,168,76,0.08) 0%,transparent 60%),
+              var(--bg);
+}
+.cover-grid {
+  position:absolute; inset:0;
+  background-image:
+    linear-gradient(rgba(201,168,76,0.06) 1px, transparent 1px),
+    linear-gradient(90deg,rgba(201,168,76,0.06) 1px,transparent 1px);
+  background-size:60px 60px;
+  mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 30%,transparent 100%);
+}
+.cover-badge {
+  font-size:11px; font-weight:700; letter-spacing:4px; color:var(--gold);
+  text-transform:uppercase; margin-bottom:24px; opacity:.8;
+}
+.cover-sym {
+  font-size:88px; line-height:1; margin-bottom:16px;
+  filter:drop-shadow(0 0 30px rgba(201,168,76,0.4));
+  animation:covPulse 4s ease-in-out infinite;
+}
+@keyframes covPulse {
+  0%,100%{filter:drop-shadow(0 0 30px rgba(201,168,76,0.3))}
+  50%    {filter:drop-shadow(0 0 60px rgba(201,168,76,0.65))}
+}
+.cover-title {
+  font-family:'Playfair Display',serif;
+  font-size:clamp(30px,5.5vw,66px); font-weight:900;
+  text-align:center; line-height:1.1; color:var(--gold-light);
+  margin-bottom:12px; text-shadow:0 0 60px rgba(201,168,76,0.3);
+}
+.cover-sub { font-size:16px; color:var(--muted); text-align:center; margin-bottom:36px; font-weight:300; }
+.cover-cards { display:flex; gap:20px; flex-wrap:wrap; justify-content:center; margin-bottom:36px; }
+.ccard {
+  background:rgba(201,168,76,0.08); border:1px solid var(--border);
+  border-radius:16px; padding:18px 28px; text-align:center;
+  backdrop-filter:blur(10px); position:relative; overflow:hidden;
+  transition:transform .2s;
+}
+.ccard:hover { transform:translateY(-3px); }
+.ccard::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+}
+.ccard-label { font-size:10px; letter-spacing:2px; color:var(--muted); text-transform:uppercase; margin-bottom:6px; }
+.ccard-val   { font-size:28px; font-weight:900; color:var(--gold-light); }
+.ccard-sub   { font-size:11px; color:var(--muted); margin-top:3px; }
+.cover-meta  { display:flex; gap:28px; flex-wrap:wrap; justify-content:center; font-size:12px; color:var(--muted); }
+.cover-meta span { display:flex; align-items:center; gap:5px; }
+.cover-line { width:180px; height:1px; margin-top:36px; opacity:.35; background:linear-gradient(90deg,transparent,var(--gold),transparent); }
+
+/* ═══════════════════════════════════════════════════════════
+   LAYOUT
+═══════════════════════════════════════════════════════════ */
+.main { max-width:1200px; margin:0 auto; padding:56px 28px; position:relative; z-index:1; }
+.grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-bottom:22px; }
+.grid-2 { display:grid; grid-template-columns:repeat(2,1fr); gap:18px; margin-bottom:22px; }
+@media(max-width:780px){ .grid-3,.grid-2 { grid-template-columns:1fr; } }
+
+.sec-hdr {
+  display:flex; align-items:center; gap:14px;
+  margin-bottom:26px; padding-bottom:14px; border-bottom:1px solid var(--border);
+}
+.sec-icon {
+  width:40px; height:40px; border-radius:10px; flex-shrink:0;
+  background:rgba(201,168,76,0.14); border:1px solid var(--border);
+  display:flex; align-items:center; justify-content:center; font-size:18px;
+}
+.sec-title { font-size:20px; font-weight:700; color:var(--gold-light); }
+.sec-desc  { font-size:12px; color:var(--muted); }
+
+.divider { text-align:center; margin:42px 0; position:relative; }
+.divider::before {
+  content:''; position:absolute; top:50%; left:0; right:0;
+  height:1px; background:linear-gradient(90deg,transparent,var(--border),transparent);
+}
+.divider span { position:relative; background:var(--bg); padding:0 16px; color:var(--gold); font-size:18px; }
+body.liquid .divider span { background:transparent; }
+
+/* ═══════════════════════════════════════════════════════════
+   STAT CARDS
+═══════════════════════════════════════════════════════════ */
+.stat-card {
+  background:var(--card-bg); border:1px solid var(--card-border);
+  border-radius:var(--radius); padding:20px; text-align:center;
+  position:relative; transition:transform .2s,border-color .2s,box-shadow .2s;
+}
+.stat-card:hover { transform:translateY(-4px); border-color:var(--gold); box-shadow:var(--shadow); }
+.s-label { font-size:10px; letter-spacing:1.5px; color:var(--muted); text-transform:uppercase; margin-bottom:8px; }
+.s-val   { font-size:25px; font-weight:800; line-height:1; margin-bottom:4px; }
+.s-sub   { font-size:11px; color:var(--muted); }
+.s-up    { color:var(--green); }
+.s-down  { color:var(--red);   }
+.s-gold  { color:var(--gold-light); }
+.info-i  {
+  position:absolute; top:9px; left:9px;
+  width:17px; height:17px; border-radius:50%;
+  background:rgba(201,168,76,0.13); border:1px solid var(--border);
+  font-size:9px; display:flex; align-items:center; justify-content:center;
+  color:var(--gold); font-weight:700;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PANELS / CHART BOXES
+═══════════════════════════════════════════════════════════ */
+.panel {
+  background:var(--panel); border:1px solid var(--border);
+  border-radius:16px; padding:26px; margin-bottom:22px;
+  position:relative; overflow:hidden;
+}
+.panel::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent); opacity:.35;
+}
+.chart-box {
+  background:var(--card-bg); border:1px solid var(--card-border);
+  border-radius:var(--radius); padding:22px; margin-bottom:22px;
+}
+.ch-title { font-size:14px; font-weight:700; color:var(--gold-light); margin-bottom:5px; }
+.ch-sub   { font-size:11px; color:var(--muted); margin-bottom:18px; }
+canvas { max-height:310px; }
+
+/* ═══════════════════════════════════════════════════════════
+   TABLES
+═══════════════════════════════════════════════════════════ */
+.tbl-wrap { overflow-x:auto; margin-bottom:22px; border-radius:12px; }
+table { width:100%; border-collapse:collapse; font-size:13px; }
+thead { background:rgba(201,168,76,0.11); }
+th { padding:13px 15px; text-align:right; color:var(--gold); font-size:11px; letter-spacing:1px; text-transform:uppercase; font-weight:700; white-space:nowrap; }
+html[dir="ltr"] th { text-align:left; }
+td { padding:12px 15px; border-bottom:1px solid rgba(255,255,255,0.05); vertical-align:middle; }
+tr:last-child td { border-bottom:none; }
+tr:hover td { background:rgba(201,168,76,0.04); }
+.tbl-s { color:var(--green); font-weight:700; }
+.tbl-r { color:var(--red);   font-weight:700; }
+.tbl-b { color:var(--blue);  font-weight:700; }
+.tbl-g { color:var(--gold-light); font-weight:700; }
+.conf-row { display:flex; gap:3px; }
+.cdot { width:6px; height:6px; border-radius:50%; }
+.cdot-on  { background:var(--gold); }
+.cdot-off { background:rgba(201,168,76,0.15); }
+
+/* ═══════════════════════════════════════════════════════════
+   AED HERO
+═══════════════════════════════════════════════════════════ */
+.aed-hero {
+  background:linear-gradient(135deg,rgba(201,168,76,0.14),rgba(201,168,76,0.04));
+  border:1px solid var(--gold); border-radius:16px;
+  padding:26px; margin-bottom:22px; text-align:center;
+}
+.aed-title { font-size:12px; letter-spacing:2px; color:var(--gold); text-transform:uppercase; margin-bottom:14px; }
+.aed-big   { font-size:46px; font-weight:900; color:var(--gold-light); }
+.aed-sub   { font-size:12px; color:var(--muted); margin-top:4px; }
+
+/* ═══════════════════════════════════════════════════════════
+   FACTOR CARDS
+═══════════════════════════════════════════════════════════ */
+.factor-card {
+  background:var(--card-bg); border:1px solid var(--card-border);
+  border-radius:var(--radius); padding:22px; margin-bottom:18px;
+  border-right:4px solid var(--gold); transition:transform .2s,box-shadow .2s;
+}
+.factor-card:hover { transform:translateX(-4px); box-shadow:var(--shadow); }
+html[dir="ltr"] .factor-card { border-right:none; border-left:4px solid var(--gold); }
+html[dir="ltr"] .factor-card:hover { transform:translateX(4px); }
+.f-num {
+  display:inline-block; background:var(--gold); color:var(--bg);
+  font-size:10px; font-weight:900; letter-spacing:1px;
+  padding:2px 10px; border-radius:20px; margin-bottom:9px;
+}
+.f-title  { font-size:16px; font-weight:700; margin-bottom:7px; color:var(--gold-light); }
+.f-weight {
+  float:left; background:rgba(201,168,76,0.1); border:1px solid var(--border);
+  padding:2px 10px; border-radius:20px; font-size:11px; color:var(--gold); font-weight:700;
+}
+html[dir="ltr"] .f-weight { float:right; }
+.f-text { font-size:13px; line-height:1.85; color:var(--text); margin-top:9px; }
+.f-badge {
+  display:inline-block; padding:2px 10px; border-radius:20px;
+  font-size:10px; font-weight:700; margin-bottom:7px;
+}
+.b-bear { background:rgba(224,82,82,0.14); color:var(--red);   border:1px solid rgba(224,82,82,0.3); }
+.b-bull { background:rgba(78,203,165,0.14); color:var(--green); border:1px solid rgba(78,203,165,0.3); }
+.b-mix  { background:rgba(91,141,239,0.14); color:var(--blue);  border:1px solid rgba(91,141,239,0.3); }
+
+/* ═══════════════════════════════════════════════════════════
+   PROBABILITY RINGS — HORIZONTAL
+═══════════════════════════════════════════════════════════ */
+.prob-rings-wrap  { display:flex; flex-direction:column; gap:26px; }
+.prob-ring-row    { display:flex; align-items:center; gap:18px; }
+.prob-ring-info   { flex:1; }
+.p-title { font-size:15px; font-weight:700; color:var(--text); margin-bottom:3px; }
+.p-sub   { font-size:12px; color:var(--muted); line-height:1.65; }
+.p-tgt   { font-size:12px; color:var(--gold); margin-top:5px; }
+.p-badges{ display:flex; gap:7px; margin-top:7px; flex-wrap:wrap; }
+.p-badge { padding:3px 11px; border-radius:20px; font-size:11px; font-weight:700; display:flex; align-items:center; gap:4px; }
+.p-bear-b{ background:rgba(224,82,82,0.13); color:var(--red);   border:1px solid rgba(224,82,82,0.25); }
+.p-bull-b{ background:rgba(78,203,165,0.13); color:var(--green); border:1px solid rgba(78,203,165,0.25); }
+
+/* ═══════════════════════════════════════════════════════════
+   SCENARIOS
+═══════════════════════════════════════════════════════════ */
+.sc-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:22px; }
+@media(max-width:640px){ .sc-grid { grid-template-columns:1fr; } }
+.sc-card { border-radius:12px; padding:18px; border:1px solid; }
+.sc-bull { background:rgba(78,203,165,0.05); border-color:rgba(78,203,165,0.23); }
+.sc-bear { background:rgba(224,82,82,0.05);  border-color:rgba(224,82,82,0.23);  }
+.sc-ico  { font-size:22px; margin-bottom:9px; }
+.sc-ttl  { font-size:14px; font-weight:700; margin-bottom:9px; }
+.sc-bull .sc-ttl { color:var(--green); }
+.sc-bear .sc-ttl { color:var(--red);   }
+.sc-list { list-style:none; }
+.sc-list li { font-size:12px; line-height:1.7; color:var(--text); padding-right:14px; position:relative; }
+html[dir="ltr"] .sc-list li { padding-right:0; padding-left:14px; }
+.sc-list li::before { content:'•'; position:absolute; right:0; color:var(--gold); }
+html[dir="ltr"] .sc-list li::before { right:auto; left:0; }
+
+/* ═══════════════════════════════════════════════════════════
+   DECISION BOX
+═══════════════════════════════════════════════════════════ */
+.dec-box {
+  background:linear-gradient(135deg,rgba(201,168,76,0.12),rgba(201,168,76,0.03));
+  border:2px solid var(--gold); border-radius:20px;
+  padding:38px; text-align:center; margin-bottom:38px;
+  position:relative; overflow:hidden;
+}
+.dec-box::before {
+  content:'⚜'; position:absolute; font-size:190px; opacity:.03;
+  top:50%; left:50%; transform:translate(-50%,-50%);
+}
+.dec-verdict {
+  font-family:'Playfair Display',serif; font-size:38px; font-weight:900;
+  color:var(--gold-light); margin-bottom:11px;
+  text-shadow:0 0 28px rgba(201,168,76,0.3);
+}
+.dec-sub  { font-size:14px; color:var(--muted); margin-bottom:26px; }
+.dec-tags { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; }
+.dec-tag  { padding:7px 18px; border-radius:28px; font-size:12px; font-weight:700; border:1px solid; }
+
+/* ═══════════════════════════════════════════════════════════
+   PROMPT BOX
+═══════════════════════════════════════════════════════════ */
+.prompt-box {
+  background:#0D0D15; border:1px solid rgba(91,141,239,0.28);
+  border-radius:14px; padding:24px; margin-bottom:22px;
+  font-family:'Courier New',monospace; direction:ltr; text-align:left;
+}
+.p-hdr {
+  display:flex; align-items:center; gap:7px;
+  margin-bottom:14px; padding-bottom:11px;
+  border-bottom:1px solid rgba(91,141,239,0.18);
+}
+.pdot { width:11px; height:11px; border-radius:50%; }
+.pr{ background:#FF5F57; } .py{ background:#FFBD2E; } .pg{ background:#28CA41; }
+.p-lbl { font-family:'Cairo',sans-serif; font-size:11px; color:rgba(91,141,239,0.65); letter-spacing:2px; text-transform:uppercase; }
+.prompt-text { font-size:11.5px; line-height:1.9; color:#A8C4FF; white-space:pre-wrap; word-break:break-word; }
+body.liquid .prompt-text { color:#a8d4ff; }
+
+/* ═══════════════════════════════════════════════════════════
+   SKELETON / LOADING
+═══════════════════════════════════════════════════════════ */
+.skel {
+  height:13px; border-radius:7px; margin-bottom:9px;
+  background:linear-gradient(90deg,var(--bg3) 25%,rgba(201,168,76,0.09) 50%,var(--bg3) 75%);
+  background-size:200% 100%; animation:skelAnim 1.4s infinite;
+}
+@keyframes skelAnim { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+/* ═══════════════════════════════════════════════════════════
+   FOOTER / DISCLAIMER
+═══════════════════════════════════════════════════════════ */
+.disclaimer {
+  background:rgba(224,82,82,0.05); border:1px solid rgba(224,82,82,0.18);
+  border-radius:12px; padding:18px; font-size:11px; color:var(--muted);
+  text-align:center; line-height:1.85; margin-top:38px;
+}
+.footer {
+  text-align:center; padding:32px; color:var(--muted);
+  font-size:11px; letter-spacing:1px; border-top:1px solid var(--border);
+}
+</style>
+</head>
+<body id="bodyEl">
+
+<!-- GLOBAL TOOLTIP (single floating element, positioned by JS) -->
+<div id="tooltip-global"></div>
+
+<!-- ═══════ CONTROL BAR (centered) ═══════ -->
+<div class="ctrl-bar" id="ctrlBar">
+  <button class="ctrl-btn active" id="btnTheme" onclick="toggleTheme()">
+    <span id="themeIcon">💧</span>
+    <span id="themeLabel" data-ar="زجاج سائل" data-en="Liquid Glass">زجاج سائل</span>
+  </button>
+  <div class="ctrl-sep"></div>
+  <button class="ctrl-btn active" id="btnLang" onclick="toggleLang()">
+    <span>🌐</span>
+    <span id="langLabel">EN</span>
+  </button>
+  <div class="ctrl-sep"></div>
+  <button class="ctrl-btn" onclick="fetchGoldData(true)">
+    <span>🔄</span>
+    <span data-ar="تحديث" data-en="Refresh">تحديث</span>
+  </button>
+</div>
+
+<!-- ═══════ UPDATE BAR ═══════ -->
+<div class="update-bar" id="updateBar">
+  <div class="u-status">
+    <div class="u-dot" id="uDot"></div>
+    <span id="uStatus" data-ar="جارٍ التحميل..." data-en="Loading...">جارٍ التحميل...</span>
+  </div>
+  <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;">
+    <span data-ar="آخر تحديث:" data-en="Last update:">آخر تحديث:</span>
+    <span class="u-time" id="uTime">—</span>
+    <span id="uCountdown" style="color:var(--muted);font-size:11px;"></span>
+  </div>
+  <div class="u-prog" id="uProg" style="width:0%"></div>
+</div>
+
+<!-- ═══════ COVER ═══════ -->
+<section class="cover" style="margin-top:42px;">
+  <div class="cover-grid"></div>
+  <div style="width:110px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin-bottom:24px;animation:shimLine 3s infinite;"></div>
+  <style>@keyframes shimLine{0%,100%{opacity:.4}50%{opacity:1}}</style>
+  <div class="cover-badge" data-ar="تقرير تحليل السوق · نسخة إماراتية حصرية · تحديث تلقائي" data-en="Market Analysis Report · UAE Exclusive Edition · Auto-Updated">تقرير تحليل السوق · نسخة إماراتية حصرية · تحديث تلقائي</div>
+  <div class="cover-sym">⚜️</div>
+  <h1 class="cover-title" data-ar="تحليل الذهب<br>XAU/USD · AED" data-en="Gold Analysis<br>XAU/USD · AED">تحليل الذهب<br>XAU/USD · AED</h1>
+  <p class="cover-sub" data-ar="تحليل متعدد العوامل · اقتصادي كلي · تقني · تحديث آلي" data-en="Multi-Factor Analysis · Macro · Technical · Auto-Refresh">تحليل متعدد العوامل · اقتصادي كلي · تقني · تحديث آلي</p>
+  <div class="cover-cards">
+    <div class="ccard has-tip" data-tip="السعر الدولي للأونصة الترويانية (31.1g) من الذهب عيار 24. هو المرجع العالمي للذهب ويُحدَّث لحظة بلحظة في الأسواق العالمية.">
+      <div class="ccard-label" data-ar="السعر الفوري USD" data-en="Spot Price USD">السعر الفوري USD</div>
+      <div class="ccard-val" id="c-usd">—</div>
+      <div class="ccard-sub" data-ar="أونصة troy · XAU/USD" data-en="troy oz · XAU/USD">أونصة troy · XAU/USD</div>
+    </div>
+    <div class="ccard has-tip" data-tip="الجرام = (سعر الأونصة ÷ 31.1035) × 3.6725. هذا هو السعر الأساسي في أسواق الذهب الإماراتية كسوق الذهب في دبي والشارقة.">
+      <div class="ccard-label" data-ar="سعر الجرام AED" data-en="Gram Price AED">سعر الجرام AED</div>
+      <div class="ccard-val" id="c-gram">—</div>
+      <div class="ccard-sub" data-ar="درهم · عيار 24" data-en="AED · 24K">درهم · عيار 24</div>
+    </div>
+    <div class="ccard has-tip" data-tip="الحكم مبني على دمج: التحليل الفني (RSI/MA) + الاقتصاد الكلي (الفيدرالي/الدولار) + الجيوسياسة. يمثل الاتجاه الغالب وليس الحتمي.">
+      <div class="ccard-label" data-ar="الحكم الإجمالي" data-en="Overall Verdict">الحكم الإجمالي</div>
+      <div class="ccard-val" id="c-verdict" style="color:var(--red)">—</div>
+      <div class="ccard-sub" id="c-vsub">—</div>
+    </div>
+  </div>
+  <div class="cover-meta">
+    <span>📅 <span id="c-date">—</span></span>
+    <span>💱 1 USD = 3.6725 AED</span>
+    <span>📊 XAU/USD · Global Markets</span>
+    <span>🕌 <span data-ar="إعداد للمستثمر الإماراتي" data-en="UAE Investor Edition">إعداد للمستثمر الإماراتي</span></span>
+  </div>
+  <div class="cover-line"></div>
+</section>
+
+<!-- ═══════ MAIN ═══════ -->
+<div class="main">
+
+  <!-- 1. SNAPSHOT -->
+  <div class="sec-hdr">
+    <div class="sec-icon">📊</div>
+    <div>
+      <div class="sec-title" data-ar="لمحة السوق الراهنة" data-en="Current Market Snapshot">لمحة السوق الراهنة</div>
+      <div class="sec-desc" id="snap-date" data-ar="بيانات محدّثة تلقائياً" data-en="Auto-updated data">بيانات محدّثة تلقائياً</div>
+    </div>
+  </div>
+  <div class="grid-3" id="statsGrid">
+    <div class="stat-card"><div class="skel" style="width:60%;margin:0 auto 8px"></div><div class="skel" style="width:80%;margin:0 auto;height:20px"></div></div>
+    <div class="stat-card"><div class="skel" style="width:60%;margin:0 auto 8px"></div><div class="skel" style="width:80%;margin:0 auto;height:20px"></div></div>
+    <div class="stat-card"><div class="skel" style="width:60%;margin:0 auto 8px"></div><div class="skel" style="width:80%;margin:0 auto;height:20px"></div></div>
+    <div class="stat-card"><div class="skel" style="width:60%;margin:0 auto 8px"></div><div class="skel" style="width:80%;margin:0 auto;height:20px"></div></div>
+    <div class="stat-card"><div class="skel" style="width:60%;margin:0 auto 8px"></div><div class="skel" style="width:80%;margin:0 auto;height:20px"></div></div>
+    <div class="stat-card"><div class="skel" style="width:60%;margin:0 auto 8px"></div><div class="skel" style="width:80%;margin:0 auto;height:20px"></div></div>
+  </div>
+
+  <!-- 2. AED TABLE -->
+  <div class="divider"><span>⚜</span></div>
+  <div class="sec-hdr">
+    <div class="sec-icon">🇦🇪</div>
+    <div>
+      <div class="sec-title" data-ar="جدول تحويل الذهب — درهم إماراتي" data-en="Gold Conversion Table — UAE Dirham">جدول تحويل الذهب — درهم إماراتي</div>
+      <div class="sec-desc" data-ar="محسوب آلياً · 1 USD = 3.6725 AED" data-en="Auto-calculated · 1 USD = 3.6725 AED">محسوب آلياً · 1 USD = 3.6725 AED</div>
+    </div>
+  </div>
+  <div class="aed-hero has-tip" data-tip="الجرام هو أصغر وحدة ذهب تُباع في الإمارات. العيار 24 يعني ذهباً خالصاً 100%. معظم المجوهرات الإماراتية من عيار 21 (87.5%) أو 18 (75%).">
+    <div class="aed-title" data-ar="سعر الجرام الحالي (عيار 24)" data-en="Current Gram Price (24K)">سعر الجرام الحالي (عيار 24)</div>
+    <div class="aed-big" id="gram-big">—</div>
+    <div class="aed-sub" id="gram-sub">—</div>
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th data-ar="الوحدة" data-en="Unit">الوحدة</th>
+          <th data-ar="الوزن (g)" data-en="Weight (g)">الوزن (g)</th>
+          <th>USD</th>
+          <th data-ar="AED عيار 24" data-en="AED 24K">AED عيار 24</th>
+          <th data-ar="عيار 21" data-en="21K">عيار 21</th>
+          <th data-ar="عيار 18" data-en="18K">عيار 18</th>
+          <th data-ar="عيار 14" data-en="14K">عيار 14</th>
+        </tr>
+      </thead>
+      <tbody id="aedTbody"><tr><td colspan="7"><div class="skel" style="width:90%;margin:8px auto"></div></td></tr></tbody>
+    </table>
+  </div>
+  <div class="panel" style="padding:13px 18px;font-size:11px;color:var(--muted);background:rgba(201,168,76,0.04);">
+    📌 <strong style="color:var(--gold)" data-ar="ملاحظة:" data-en="Note:">ملاحظة:</strong>
+    <span data-ar="الأسعار للذهب الخام. مع مصنعية المجوهرات: +15–25%. عيار 21 = 87.5% · عيار 18 = 75% · عيار 14 = 58.3% من عيار 24." data-en="Prices are for raw gold. Jewelry workmanship adds +15–25%. 21K = 87.5% · 18K = 75% · 14K = 58.3% of 24K.">الأسعار للذهب الخام. مع مصنعية المجوهرات: +15–25%. عيار 21 = 87.5% · عيار 18 = 75% · عيار 14 = 58.3% من عيار 24.</span>
+  </div>
+
+  <!-- 3. CHARTS -->
+  <div class="divider"><span>⚜</span></div>
+  <div class="sec-hdr">
+    <div class="sec-icon">📈</div>
+    <div>
+      <div class="sec-title" data-ar="الرسوم البيانية والتحليل التقني" data-en="Charts & Technical Analysis">الرسوم البيانية والتحليل التقني</div>
+      <div class="sec-desc" data-ar="مسار الأسعار · الدعم والمقاومة · التوقعات" data-en="Price history · Support & Resistance · Forecasts">مسار الأسعار · الدعم والمقاومة · التوقعات</div>
+    </div>
+  </div>
+  <div class="chart-box">
+    <div class="ch-title" data-ar="مسار سعر الذهب — الأشهر الأخيرة" data-en="Gold Price History — Recent Months">مسار سعر الذهب — الأشهر الأخيرة</div>
+    <div class="ch-sub" data-ar="محور يمين = USD | محور يسار = AED" data-en="Right axis = USD | Left axis = AED">محور يمين = USD | محور يسار = AED</div>
+    <canvas id="priceChart"></canvas>
+  </div>
+  <div class="grid-2">
+    <div class="chart-box">
+      <div class="ch-title" data-ar="سعر الجرام بالدرهم حسب العيار" data-en="Gram Price in AED by Karat">سعر الجرام بالدرهم حسب العيار</div>
+      <div class="ch-sub" data-ar="مقارنة العيارات الأربعة" data-en="Comparison of 4 karat grades">مقارنة العيارات الأربعة</div>
+      <canvas id="karatChart"></canvas>
+    </div>
+    <div class="chart-box">
+      <div class="ch-title" data-ar="أوزان العوامل المؤثرة" data-en="Factor Weight Distribution">أوزان العوامل المؤثرة</div>
+      <div class="ch-sub" data-ar="التوزيع النسبي لمحركات الذهب الآن" data-en="Relative weighting of current gold drivers">التوزيع النسبي لمحركات الذهب الآن</div>
+      <canvas id="factorPie"></canvas>
+    </div>
+  </div>
+  <div class="chart-box">
+    <div class="ch-title" data-ar="مستويات الدعم والمقاومة الرئيسية" data-en="Key Support & Resistance Levels">مستويات الدعم والمقاومة الرئيسية</div>
+    <div class="ch-sub" data-ar="اللون الذهبي = السعر الحالي" data-en="Gold color = current price">اللون الذهبي = السعر الحالي</div>
+    <canvas id="levelsChart"></canvas>
+  </div>
+  <div class="chart-box">
+    <div class="ch-title" data-ar="توقعات السيناريوهات حتى نهاية 2026" data-en="Scenario Forecasts Through End-2026">توقعات السيناريوهات حتى نهاية 2026</div>
+    <div class="ch-sub" data-ar="صاعد · أساسي · هابط — بالدولار والدرهم" data-en="Bull · Base · Bear — in USD & AED">صاعد · أساسي · هابط — بالدولار والدرهم</div>
+    <canvas id="forecastChart"></canvas>
+  </div>
+
+  <!-- 4. TOP 3 FACTORS -->
+  <div class="divider"><span>⚜</span></div>
+  <div class="sec-hdr">
+    <div class="sec-icon">🔺</div>
+    <div><div class="sec-title" data-ar="أهم 3 عوامل تحرّك الذهب الآن" data-en="Top 3 Factors Driving Gold Now">أهم 3 عوامل تحرّك الذهب الآن</div></div>
+  </div>
+
+  <!-- Factor 1 -->
+  <div class="factor-card">
+    <div class="f-num" data-ar="العامل الأول" data-en="Factor 1">العامل الأول</div>
+    <span class="f-weight" data-ar="الوزن: 40%" data-en="Weight: 40%">الوزن: 40%</span>
+    <div class="f-title" data-ar="🏦 موقف الاحتياطي الفيدرالي المتشدد" data-en="🏦 Hawkish Federal Reserve Stance">🏦 موقف الاحتياطي الفيدرالي المتشدد</div>
+    <span class="f-badge b-bear" data-ar="ضغط هبوطي | ثقة عالية جداً" data-en="Bearish pressure | Very high confidence">ضغط هبوطي | ثقة عالية جداً</span>
+    <div class="f-text">
+      <span data-ar="في اجتماع 18 مارس 2026، أبقى الفيدرالي الفائدة عند 3.50%–3.75% وخفّض توقعات التخفيض من اثنين إلى واحد فقط لبقية العام، ما فاجأ الأسواق التي كانت تسعّر 3 تخفيضات. مؤشر PPI لفبراير صدر عند +0.7% فوق التوقعات بشكل حاد، وعائد السندات 10 سنوات قفز إلى 4.2%، ومؤشر الدولار سجّل 99.9.
+
+المعادلة الأساسية: الفائدة المرتفعة ترفع العوائد الحقيقية على السندات، مما يجعل الاحتفاظ بالذهب (الذي لا يدفع فائدة) أقل جاذبية. هذا العامل وحده أطلق موجة بيع أسقطت الذهب بأكثر من $500 في 72 ساعة — وهو ما يُثبت أن التوقعات المتعلقة بالفيدرالي تتفوق حالياً على أي دعم جيوسياسي." data-en="At the March 18, 2026 meeting, the Fed held rates at 3.50%–3.75% and cut projected cuts from two to just one for the rest of the year, shocking markets that had priced in three cuts. February PPI came in sharply above expectations at +0.7%, the 10-year Treasury yield jumped to 4.2%, and the Dollar Index hit 99.9.
+
+The core equation: higher rates lift real bond yields, making non-yielding gold less attractive. This single factor triggered a $500+ sell-off in 72 hours — proving that Fed expectations currently dominate any geopolitical support.">في اجتماع 18 مارس 2026، أبقى الفيدرالي الفائدة عند 3.50%–3.75% وخفّض توقعات التخفيض من اثنين إلى واحد فقط لبقية العام، ما فاجأ الأسواق التي كانت تسعّر 3 تخفيضات. مؤشر PPI لفبراير صدر عند +0.7% فوق التوقعات بشكل حاد، وعائد السندات 10 سنوات قفز إلى 4.2%، ومؤشر الدولار سجّل 99.9.
+
+المعادلة الأساسية: الفائدة المرتفعة ترفع العوائد الحقيقية على السندات، مما يجعل الاحتفاظ بالذهب (الذي لا يدفع فائدة) أقل جاذبية. هذا العامل وحده أطلق موجة بيع أسقطت الذهب بأكثر من $500 في 72 ساعة — وهو ما يُثبت أن التوقعات المتعلقة بالفيدرالي تتفوق حالياً على أي دعم جيوسياسي.</span>
+    </div>
+  </div>
+
+  <!-- Factor 2 -->
+  <div class="factor-card" style="border-right-color:var(--blue)">
+    <div class="f-num" style="background:var(--blue);" data-ar="العامل الثاني" data-en="Factor 2">العامل الثاني</div>
+    <span class="f-weight" style="color:var(--blue);border-color:rgba(91,141,239,0.3)" data-ar="الوزن: 35%" data-en="Weight: 35%">الوزن: 35%</span>
+    <div class="f-title" data-ar="⚔️ أزمة مضيق هرمز والحرب على إيران" data-en="⚔️ Strait of Hormuz Crisis & Iran War">⚔️ أزمة مضيق هرمز والحرب على إيران</div>
+    <span class="f-badge b-mix" data-ar="مفارقة حادة | تأثير مختلط" data-en="Sharp paradox | Mixed impact">مفارقة حادة | تأثير مختلط</span>
+    <div class="f-text">
+      <span data-ar="إغلاق مضيق هرمز أوقف 20% من إمدادات النفط العالمية ودفع برنت فوق $126 للبرميل — وهو أكبر اضطراب لإمدادات الطاقة منذ أزمة السبعينيات. المنطق الكلاسيكي يقول: أزمة جيوسياسية = صعود الذهب كملاذ آمن. لكن هنا تكمن المفارقة النادرة:
+
+صدمة النفط تولّد تضخماً حاداً ← التضخم يُبقي الفيدرالي متشدداً ← الفيدرالي المتشدد يرفع عوائد السندات ← عوائد أعلى تُغري المستثمرين بالابتعاد عن الذهب.
+
+أي أن الحرب نفسها خلقت الظروف التي تُضعف الذهب — وهو ما لا يحدث في كل أزمة. الحسم سيأتي: إما أن تتصاعد الأزمة لتضرب البنية التحتية الخليجية (→ ارتفاع حاد للذهب بصرف النظر عن الفائدة) أو تُحلّ بسرعة (→ انهيار التضخم والعودة للديناميكية الطبيعية)." data-en="The Strait of Hormuz closure halted 20% of global oil supplies, pushing Brent above $126/barrel — the largest energy supply disruption since the 1970s. Classic logic says: geopolitical crisis = gold soars as safe haven. But here lies the rare paradox:
+
+Oil shock generates sharp inflation ← inflation keeps the Fed hawkish ← hawkish Fed raises bond yields ← higher yields pull investors away from gold.
+
+The war itself created the conditions that weaken gold — something that doesn't happen in every crisis. Resolution will come: either the crisis escalates to hit Gulf infrastructure (→ sharp gold spike regardless of rates) or resolves quickly (→ inflation collapses and normal dynamics resume).">إغلاق مضيق هرمز أوقف 20% من إمدادات النفط العالمية ودفع برنت فوق $126 للبرميل — وهو أكبر اضطراب لإمدادات الطاقة منذ أزمة السبعينيات. المنطق الكلاسيكي يقول: أزمة جيوسياسية = صعود الذهب كملاذ آمن. لكن هنا تكمن المفارقة النادرة:
+
+صدمة النفط تولّد تضخماً حاداً ← التضخم يُبقي الفيدرالي متشدداً ← الفيدرالي المتشدد يرفع عوائد السندات ← عوائد أعلى تُغري المستثمرين بالابتعاد عن الذهب.
+
+أي أن الحرب نفسها خلقت الظروف التي تُضعف الذهب — وهو ما لا يحدث في كل أزمة. الحسم سيأتي: إما أن تتصاعد الأزمة لتضرب البنية التحتية الخليجية (→ ارتفاع حاد للذهب بصرف النظر عن الفائدة) أو تُحلّ بسرعة (→ انهيار التضخم والعودة للديناميكية الطبيعية).</span>
+    </div>
+  </div>
+
+  <!-- Factor 3 -->
+  <div class="factor-card" style="border-right-color:var(--green)">
+    <div class="f-num" style="background:var(--green);color:#0A0A0F" data-ar="العامل الثالث" data-en="Factor 3">العامل الثالث</div>
+    <span class="f-weight" style="color:var(--green);border-color:rgba(78,203,165,0.3)" data-ar="الوزن: 25%" data-en="Weight: 25%">الوزن: 25%</span>
+    <div class="f-title" data-ar="💵 قوة الدولار الأمريكي — DXY ~99.9" data-en="💵 US Dollar Strength — DXY ~99.9">💵 قوة الدولار الأمريكي — DXY ~99.9</div>
+    <span class="f-badge b-bear" data-ar="ضغط هبوطي مستمر | ثقة عالية" data-en="Sustained bearish pressure | High confidence">ضغط هبوطي مستمر | ثقة عالية</span>
+    <div class="f-text">
+      <span data-ar="الدولار يتلقى دعماً مزدوجاً في الوقت الراهن: أولاً الفيدرالي المتشدد الذي يرفع عوائد السندات الأمريكية ويجعلها أكثر جذباً للمستثمرين الأجانب، وثانياً الطلب على الملاذ الآمن الناجم عن التوترات الجيوسياسية في منطقة الشرق الأوسط.
+
+مؤشر DXY يقترب من 99.9 — وهو مستوى مرتفع تاريخياً. العلاقة العكسية بين الدولار والذهب متجذّرة لأن الذهب مُسعَّر بالدولار: كلما ارتفع الدولار، يحتاج المشتري الأجنبي إلى دفع أكثر بعملته الوطنية للحصول على نفس الكمية من الذهب، مما يقلل الطلب. والعكس صحيح.
+
+الإشارة الحيّة: أي اختراق لـ DXY فوق 102 سيكون إشارة هبوطية قوية جداً على الذهب." data-en="The dollar receives dual support: first, the hawkish Fed raising US bond yields and making them more attractive to foreign investors; second, safe-haven demand from Middle East geopolitical tensions.
+
+The DXY index is approaching 99.9 — historically elevated. The inverse relationship between the dollar and gold is structural: gold is priced in dollars, so as the dollar rises, foreign buyers pay more in their local currencies for the same gold quantity, reducing demand.
+
+Live signal: any DXY breakout above 102 would be a very strong bearish signal for gold.">الدولار يتلقى دعماً مزدوجاً في الوقت الراهن: أولاً الفيدرالي المتشدد الذي يرفع عوائد السندات الأمريكية ويجعلها أكثر جذباً للمستثمرين الأجانب، وثانياً الطلب على الملاذ الآمن الناجم عن التوترات الجيوسياسية في منطقة الشرق الأوسط.
+
+مؤشر DXY يقترب من 99.9 — وهو مستوى مرتفع تاريخياً. العلاقة العكسية بين الدولار والذهب متجذّرة لأن الذهب مُسعَّر بالدولار: كلما ارتفع الدولار، يحتاج المشتري الأجنبي إلى دفع أكثر بعملته الوطنية للحصول على نفس الكمية من الذهب، مما يقلل الطلب. والعكس صحيح.
+
+الإشارة الحيّة: أي اختراق لـ DXY فوق 102 سيكون إشارة هبوطية قوية جداً على الذهب.</span>
+    </div>
+  </div>
+
+  <!-- 5. TECHNICAL LEVELS -->
+  <div class="divider"><span>⚜</span></div>
+  <div class="sec-hdr">
+    <div class="sec-icon">📐</div>
+    <div>
+      <div class="sec-title" data-ar="المستويات التقنية الرئيسية" data-en="Key Technical Levels">المستويات التقنية الرئيسية</div>
+      <div class="sec-desc" data-ar="دعم · مقاومة · أهداف | USD + AED" data-en="Support · Resistance · Targets | USD + AED">دعم · مقاومة · أهداف | USD + AED</div>
+    </div>
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th data-ar="المستوى USD" data-en="Level USD">المستوى USD</th>
+          <th data-ar="المستوى AED" data-en="Level AED">المستوى AED</th>
+          <th data-ar="النوع" data-en="Type">النوع</th>
+          <th data-ar="الأهمية" data-en="Significance">الأهمية</th>
+          <th data-ar="الثقة" data-en="Confidence">الثقة</th>
+        </tr>
+      </thead>
+      <tbody id="levelsTbody"></tbody>
+    </table>
+  </div>
+
+  <!-- 6. PROBABILITY RINGS -->
+  <div class="divider"><span>⚜</span></div>
+  <div class="sec-hdr">
+    <div class="sec-icon">🎯</div>
+    <div>
+      <div class="sec-title" data-ar="احتمالات الاتجاه حسب الإطار الزمني" data-en="Directional Probabilities by Timeframe">احتمالات الاتجاه حسب الإطار الزمني</div>
+      <div class="sec-desc" data-ar="تقديرات احتمالية مبنية على التحليل المتعدد" data-en="Probabilistic estimates from multi-factor analysis">تقديرات احتمالية مبنية على التحليل المتعدد</div>
+    </div>
+  </div>
+  <div class="panel"><div class="prob-rings-wrap" id="probRings">
+    <div class="skel" style="height:100px;border-radius:12px;"></div>
+    <div class="skel" style="height:100px;border-radius:12px;"></div>
+    <div class="skel" style="height:100px;border-radius:12px;"></div>
+  </div></div>
+
+  <!-- 7. SCENARIOS -->
+  <div class="divider"><span>⚜</span></div>
+  <div class="sec-hdr">
+    <div class="sec-icon">⚠️</div>
+    <div>
+      <div class="sec-title" data-ar="سيناريوهات الخطر" data-en="Risk Scenarios">سيناريوهات الخطر</div>
+      <div class="sec-desc" data-ar="ما الذي يقلب التوقعات؟" data-en="What would invalidate the forecast?">ما الذي يقلب التوقعات؟</div>
+    </div>
+  </div>
+  <div class="sc-grid">
+    <div class="sc-card sc-bear">
+      <div class="sc-ico">📉</div>
+      <div class="sc-ttl" data-ar="ما يُعمّق الانخفاض" data-en="What Deepens the Decline">ما يُعمّق الانخفاض</div>
+      <ul class="sc-list">
+        <li data-ar="الفيدرالي يلمّح برفع الفائدة مجدداً" data-en="Fed hints at another rate hike">الفيدرالي يلمّح برفع الفائدة مجدداً</li>
+        <li data-ar="فتح مضيق هرمز سريعاً → انهيار النفط وزوال قسط الخوف" data-en="Hormuz reopens fast → oil collapse, fear premium gone">فتح مضيق هرمز سريعاً → انهيار النفط وزوال قسط الخوف</li>
+        <li data-ar="DXY يكسر 102 بشكل حاسم" data-en="DXY breaks decisively above 102">DXY يكسر 102 بشكل حاسم</li>
+        <li><strong data-ar="كسر $4,224 (MA200) → انهيار هيكلي + تصفية مراكز" data-en="Break of $4,224 (MA200) → structural collapse + liquidations">كسر $4,224 (MA200) → انهيار هيكلي + تصفية مراكز</strong></li>
+      </ul>
+    </div>
+    <div class="sc-card sc-bull">
+      <div class="sc-ico">📈</div>
+      <div class="sc-ttl" data-ar="ما يعكس الاتجاه صعوداً" data-en="What Triggers a Recovery">ما يعكس الاتجاه صعوداً</div>
+      <ul class="sc-list">
+        <li data-ar="باول يلمّح للتيسير — عضو فيدرالي صوّت بالفعل لصالح خفض" data-en="Powell hints at easing — one Fed member already voted for a cut">باول يلمّح للتيسير — عضو فيدرالي صوّت بالفعل لصالح خفض</li>
+        <li data-ar="تصعيد يضرب البنية التحتية الخليجية → ذعر ملاذ آمن يتجاوز منطق الفائدة" data-en="Escalation hits Gulf infrastructure → safe-haven panic overrides rate logic">تصعيد يضرب البنية التحتية الخليجية → ذعر ملاذ آمن يتجاوز منطق الفائدة</li>
+        <li data-ar="بيانات وظائف أمريكية ضعيفة تُعيد توقعات الخفض" data-en="Weak US jobs data brings rate cut expectations forward">بيانات وظائف أمريكية ضعيفة تُعيد توقعات الخفض</li>
+        <li data-ar="موجة شراء مركزية من البنوك المركزية الناشئة تُعجّل التراكم" data-en="EM central bank buying wave accelerates accumulation">موجة شراء مركزية من البنوك المركزية الناشئة تُعجّل التراكم</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 8. ACTION TABLE -->
+  <div class="sec-hdr">
+    <div class="sec-icon">🎯</div>
+    <div>
+      <div class="sec-title" data-ar="جدول القرارات التنفيذية" data-en="Actionable Decision Table">جدول القرارات التنفيذية</div>
+      <div class="sec-desc" data-ar="مناطق الدخول · الأهداف · وقف الخسارة" data-en="Entry zones · Targets · Stop-loss">مناطق الدخول · الأهداف · وقف الخسارة</div>
+    </div>
+  </div>
+  <div class="tbl-wrap"><table>
+    <thead><tr>
+      <th data-ar="الإطار" data-en="Timeframe">الإطار</th>
+      <th data-ar="التوجه" data-en="Bias">التوجه</th>
+      <th data-ar="دخول USD" data-en="Entry USD">دخول USD</th>
+      <th data-ar="دخول AED" data-en="Entry AED">دخول AED</th>
+      <th data-ar="الهدف" data-en="Target">الهدف</th>
+      <th data-ar="وقف الخسارة" data-en="Stop-Loss">وقف الخسارة</th>
+    </tr></thead>
+    <tbody id="actionTbody"></tbody>
+  </table></div>
+
+  <!-- 9. FINAL VERDICT -->
+  <div class="divider"><span>⚜</span></div>
+  <div class="dec-box">
+    <div style="font-size:11px;letter-spacing:3px;color:var(--gold);text-transform:uppercase;margin-bottom:14px;" data-ar="الحكم الإجمالي النهائي" data-en="FINAL OVERALL VERDICT">الحكم الإجمالي النهائي</div>
+    <div class="dec-verdict" data-ar="هبوطي قصير • صعودي بعيد" data-en="Short Bearish · Long Bullish">هبوطي قصير • صعودي بعيد</div>
+    <div class="dec-sub" data-ar="التراجع الحالي فرصة تراكم لمن يستطيع الصبر — لكن العجلة تُكلّف" data-en="The current pullback is an accumulation opportunity for patient investors — but rushing in carries real cost">التراجع الحالي فرصة تراكم لمن يستطيع الصبر — لكن العجلة تُكلّف</div>
+    <div class="dec-tags">
+      <span class="dec-tag" style="color:var(--red);border-color:rgba(224,82,82,0.4)" data-ar="⚠️ لا تشتر الآن برافعة" data-en="⚠️ No leveraged buying now">⚠️ لا تشتر الآن برافعة</span>
+      <span class="dec-tag" style="color:var(--gold);border-color:var(--border)" data-ar="✅ راقب $4,224–$4,319" data-en="✅ Watch $4,224–$4,319">✅ راقب $4,224–$4,319</span>
+      <span class="dec-tag" style="color:var(--green);border-color:rgba(78,203,165,0.4)" data-ar="🎯 هدف 2026: $5,500–$6,300" data-en="🎯 2026 Target: $5,500–$6,300">🎯 هدف 2026: $5,500–$6,300</span>
+      <span class="dec-tag" style="color:var(--blue);border-color:rgba(91,141,239,0.4)" data-ar="📊 RSI ~36 قريب التشبع البيعي" data-en="📊 RSI ~36 near oversold">📊 RSI ~36 قريب التشبع البيعي</span>
+      <span class="dec-tag" style="color:var(--muted);border-color:rgba(255,255,255,0.1)" data-ar="⏳ هرمز = المتغير الأكثر غموضاً" data-en="⏳ Hormuz = most uncertain variable">⏳ هرمز = المتغير الأكثر غموضاً</span>
+    </div>
+  </div>
+
+  <div class="disclaimer">
+    ⚠️ <strong data-ar="تنبيه قانوني:" data-en="Legal Disclaimer:">تنبيه قانوني:</strong>
+    <span data-ar="هذا التقرير للأغراض التعليمية والتحليلية فقط ولا يُعدّ نصيحة مالية أو استثمارية. تداول الذهب ينطوي على مخاطر عالية وقد تخسر رأس مالك كاملاً. استشر مستشاراً مالياً مرخصاً قبل أي قرار استثماري. الأسعار تقريبية وقد تختلف عن الأسواق الفعلية." data-en="This report is for educational and analytical purposes only and does not constitute financial or investment advice. Gold trading involves high risk and you may lose your entire capital. Consult a licensed financial advisor before any investment decision. Prices are approximate and may differ from actual markets.">هذا التقرير للأغراض التعليمية والتحليلية فقط ولا يُعدّ نصيحة مالية أو استثمارية. تداول الذهب ينطوي على مخاطر عالية وقد تخسر رأس مالك كاملاً. استشر مستشاراً مالياً مرخصاً قبل أي قرار استثماري. الأسعار تقريبية وقد تختلف عن الأسواق الفعلية.</span>
+    <br><br>
+    <span data-ar="سعر الصرف: 1 USD = 3.6725 AED (ربط ثابت) | البيانات: Anthropic Claude API · XE.com · Investing.com" data-en="Exchange rate: 1 USD = 3.6725 AED (fixed peg) | Data: Anthropic Claude API · XE.com · Investing.com">سعر الصرف: 1 USD = 3.6725 AED (ربط ثابت) | البيانات: Anthropic Claude API · XE.com · Investing.com</span>
+  </div>
+</div>
+
+<div class="footer">
+  ⚜ <span data-ar="تحليل الذهب XAU/USD | إعداد خاص للمستثمر الإماراتي | تحديث تلقائي كل 5 دقائق" data-en="Gold Analysis XAU/USD | UAE Investor Edition | Auto-refresh every 5 minutes">تحليل الذهب XAU/USD | إعداد خاص للمستثمر الإماراتي | تحديث تلقائي كل 5 دقائق</span> ⚜<br>
+  AQ
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+   JAVASCRIPT
+═══════════════════════════════════════════════════════════ -->
+<script>
+/* ──────────────────────────────────────────────────────
+   CONSTANTS & STATE
+────────────────────────────────────────────────────── */
+const AED   = 3.6725;
+const TROYZ = 31.1035;
+const REFRESH_SEC = 300; // 5 minutes
+
+let currentPrice = 4491;   // safe fallback
+let lastGoodData = null;   // last successfully parsed API data
+let charts       = {};
+let isLiquid     = false;
+let isEnglish    = false;
+let countdown    = REFRESH_SEC;
+let countTimer   = null;
+
+/* ──────────────────────────────────────────────────────
+   THEME TOGGLE
+────────────────────────────────────────────────────── */
+function toggleTheme() {
+  isLiquid = !isLiquid;
+  document.body.classList.toggle('liquid', isLiquid);
+  const btn = document.getElementById('btnTheme');
+  btn.classList.toggle('active', !isLiquid);
+  document.getElementById('themeIcon').textContent  = isLiquid ? '🌑' : '💧';
+  document.getElementById('themeLabel').setAttribute('data-ar', isLiquid ? 'داكن ذهبي' : 'زجاج سائل');
+  document.getElementById('themeLabel').setAttribute('data-en', isLiquid ? 'Dark Gold'   : 'Liquid Glass');
+  applyLang(); // refresh label
+  setTimeout(redrawCharts, 80);
+}
+
+/* ──────────────────────────────────────────────────────
+   LANGUAGE TOGGLE
+────────────────────────────────────────────────────── */
+function toggleLang() {
+  isEnglish = !isEnglish;
+  document.getElementById('htmlRoot').lang      = isEnglish ? 'en' : 'ar';
+  document.getElementById('htmlRoot').dir       = isEnglish ? 'ltr' : 'rtl';
+  document.getElementById('langLabel').textContent = isEnglish ? 'عر' : 'EN';
+  applyLang();
+}
+
+function applyLang() {
+  const attr = isEnglish ? 'data-en' : 'data-ar';
+  document.querySelectorAll('[data-ar]').forEach(el => {
+    const val = el.getAttribute(attr);
+    if (!val) return;
+    if (el.tagName === 'INPUT' || el.tagName === 'BUTTON') el.value = val;
+    else el.innerHTML = val;
+  });
+  // Update font
+  document.body.style.fontFamily = isEnglish
+    ? "'Inter', sans-serif"
+    : "'Cairo','Tajawal', sans-serif";
+}
+
+/* ──────────────────────────────────────────────────────
+   FETCH LIVE GOLD DATA
+────────────────────────────────────────────────────── */
+async function fetchGoldData(manual = false) {
+  setDot('loading');
+  setStatus(isEnglish ? 'Fetching live price...' : 'جارٍ جلب السعر الحي...');
+
+  let parsedData = null;
+
+  try {
+    /* ── STEP 1: let Claude search with the web_search tool ── */
+    const resp1 = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1024,
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        messages: [{
+          role: 'user',
+          content: 'Search for the current XAU/USD gold spot price, 52-week high and low, today\'s % change, RSI, MA50, and MA200. Return a brief summary of what you found.'
+        }]
+      })
+    });
+    if (!resp1.ok) throw new Error(`HTTP ${resp1.status}`);
+    const raw1 = await resp1.json();
+
+    /* ── Reconstruct the full conversation including tool results ── */
+    // raw1.content is the assistant message (may contain tool_use blocks)
+    const assistantMsg = { role: 'assistant', content: raw1.content };
+
+    // Build tool_result blocks for every tool_use the model made
+    const toolResults = [];
+    if (Array.isArray(raw1.content)) {
+      raw1.content.forEach(block => {
+        if (block.type === 'tool_use') {
+          // The actual search result is embedded inside the block for web_search
+          // We pass it back as a tool_result so the model can reference it
+          toolResults.push({
+            type: 'tool_result',
+            tool_use_id: block.id,
+            content: block.type === 'web_search_20250305'
+              ? (block.content || 'Search completed.')
+              : 'Search completed.'
+          });
+        }
+      });
+    }
+
+    const userFollowUp = {
+      role: 'user',
+      content: toolResults.length > 0
+        ? [...toolResults, {
+            type: 'text',
+            text: 'Based on the search results above, output ONLY a single raw JSON object with no markdown, no backticks, no explanation, no extra text whatsoever. Use exactly these keys with number values:\n{"price_usd":0,"high_52w":0,"low_52w":0,"change_pct":0,"rsi":0,"ma50":0,"ma200":0,"s1":0,"s2":0,"s3":0,"r1":0,"r2":0,"r3":0,"short_bear":65,"mid_bear":55,"long_bear":30}\nFill in the real values from search. short_bear/mid_bear/long_bear = % probability of bearish direction (0-100).'
+          }]
+        : 'Based on your search, output ONLY a raw JSON object: {"price_usd":0,"high_52w":0,"low_52w":0,"change_pct":0,"rsi":0,"ma50":0,"ma200":0,"s1":0,"s2":0,"s3":0,"r1":0,"r2":0,"r3":0,"short_bear":65,"mid_bear":55,"long_bear":30}'
+    };
+
+    /* ── STEP 2: get clean JSON output ── */
+    const resp2 = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 300,
+        messages: [
+          { role: 'user', content: 'Search for current XAU/USD gold spot price and give me a brief market summary.' },
+          assistantMsg,
+          userFollowUp
+        ]
+      })
+    });
+    if (!resp2.ok) throw new Error(`HTTP ${resp2.status} on step 2`);
+    const raw2 = await resp2.json();
+
+    // Extract text from step-2 response
+    let txt = '';
+    if (Array.isArray(raw2.content)) {
+      raw2.content.forEach(b => { if (b.type === 'text') txt += b.text; });
+    }
+
+    // Find JSON — greedy match to get full nested object
+    const jsonMatch = txt.match(/\{[\s\S]*?\}/);
+    if (!jsonMatch) throw new Error('No JSON in step-2 response');
+
+    parsedData = JSON.parse(jsonMatch[0]);
+    if (!parsedData.price_usd || parsedData.price_usd < 500) throw new Error('Implausible price value');
+
+    lastGoodData = parsedData;
+    currentPrice = parsedData.price_usd;
+    setDot('live');
+    setStatus(isEnglish
+      ? `Live data · refreshes every ${REFRESH_SEC/60}min`
+      : `بيانات مباشرة · تتحدث كل ${REFRESH_SEC/60} دقائق`);
+
+  } catch (err) {
+    console.warn('Gold API fallback:', err.message);
+    parsedData = lastGoodData; // null on very first load → buildUI uses hardcoded defaults
+    setDot('live');
+    setStatus(isEnglish ? 'Using last available price' : 'استخدام آخر سعر متاح');
+  }
+
+  document.getElementById('uTime').textContent =
+    new Date().toLocaleTimeString(isEnglish ? 'en-AE' : 'ar-AE', { hour:'2-digit', minute:'2-digit' });
+
+  buildUI(parsedData);
+  if (manual) resetCountdown();
+}
+
+/* ──────────────────────────────────────────────────────
+   BUILD ALL UI FROM DATA
+────────────────────────────────────────────────────── */
+function buildUI(d) {
+  const p    = d?.price_usd  || currentPrice;
+  const h52  = d?.high_52w   || 5595;
+  const l52  = d?.low_52w    || 2956;
+  const chg  = d?.change_pct ?? -0.8;
+  const rsi  = d?.rsi        || 36;
+  const ma50 = d?.ma50       || 5075;
+  const ma200= d?.ma200      || 4364;
+  const s1   = d?.s1         || 4224;
+  const s2   = d?.s2         || 4319;
+  const s3   = d?.s3         || 4395;
+  const r1   = d?.r1         || 4537;
+  const r2   = d?.r2         || 4670;
+  const r3   = d?.r3         || 4803;
+
+  currentPrice = p;
+  const gUSD = p / TROYZ;
+  const gAED = gUSD * AED;
+  const ozAED = p * AED;
+  const fromPeak = ((p - 5419) / 5419 * 100).toFixed(1);
+
+  /* — COVER — */
+  document.getElementById('c-usd').textContent    = '$' + p.toLocaleString('en');
+  document.getElementById('c-gram').textContent   = gAED.toFixed(0) + ' د.إ';
+  const verd = p < 4500 ? (isEnglish?'Bearish':'هبوطي') : p < 4900 ? (isEnglish?'Neutral':'محايد') : (isEnglish?'Bullish':'صعودي');
+  const verdColor = p < 4500 ? 'var(--red)' : p < 4900 ? 'var(--gold)' : 'var(--green)';
+  document.getElementById('c-verdict').textContent  = verd;
+  document.getElementById('c-verdict').style.color  = verdColor;
+  document.getElementById('c-vsub').textContent     = isEnglish ? 'Short-term' : 'قصير المدى';
+  document.getElementById('c-date').textContent     = new Date().toLocaleDateString(isEnglish?'en-AE':'ar-AE',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  document.getElementById('snap-date').textContent  = isEnglish ? `Data refreshed · ${new Date().toLocaleTimeString('en-AE')}` : `بيانات محدّثة · ${new Date().toLocaleTimeString('ar-AE')}`;
+
+  /* — GRAM HERO — */
+  document.getElementById('gram-big').textContent = gAED.toFixed(1) + (isEnglish?' AED':' درهم');
+  document.getElementById('gram-sub').textContent = isEnglish
+    ? `24K pure gold · equivalent $${gUSD.toFixed(2)} USD per gram`
+    : `ذهب عيار 24 · معادل $${gUSD.toFixed(2)} USD للجرام`;
+
+  /* — STAT CARDS — */
+  const stats = [
+    { lar:'السعر الفوري USD', len:'Spot Price USD',
+      val:`$${p.toLocaleString('en')}`, sub_ar:'أونصة troy · XAU/USD', sub_en:'troy oz · XAU/USD', cls:'s-gold',
+      tip_ar:`السعر الدولي للذهب الآن. ${chg>=0?'ارتفع':'انخفض'} اليوم بنسبة ${Math.abs(chg).toFixed(2)}%. المرجع الذي تُقاس به جميع الأسعار في العالم.`,
+      tip_en:`Current international gold price. ${chg>=0?'Up':'Down'} ${Math.abs(chg).toFixed(2)}% today. The global benchmark against which all prices are measured.`,
+      verd_ar:chg>=0?'إيجابي اليوم':'سلبي اليوم', verd_en:chg>=0?'Positive today':'Negative today', vc:chg>=0?'tv-bull':'tv-bear'},
+    { lar:'الأونصة بالدرهم', len:'Oz Price AED',
+      val:`${ozAED.toLocaleString('ar',{maximumFractionDigits:0})} د.إ`, sub_ar:'درهم إماراتي · أونصة', sub_en:'UAE Dirham per troy oz', cls:'s-gold',
+      tip_ar:'الأونصة الترويانية = 31.1035 جرام. محوّلة بسعر الربط الثابت 3.6725 درهم للدولار. هذا هو السعر المرجعي لتجار الذهب الإماراتيين.',
+      tip_en:'One troy oz = 31.1035 grams. Converted at the fixed peg rate of 3.6725 AED/USD. This is the benchmark price for UAE gold traders.',
+      verd_ar:'مرجع للتجار', verd_en:'Trader benchmark', vc:'tv-neut'},
+    { lar:'الجرام بالدرهم', len:'Gram Price AED',
+      val:`${gAED.toFixed(0)} د.إ`, sub_ar:'عيار 24 · جرام', sub_en:'24K · per gram', cls:'s-gold',
+      tip_ar:'الوحدة الأكثر استخداماً في سوق الذهب الإماراتي. قارن هذا السعر بأسعار المحلات في سوق الذهب بدبي — الفرق هو المصنعية (+15–25%).',
+      tip_en:'The most-used unit in the UAE gold market. Compare this to shop prices at the Dubai Gold Souk — the difference is workmanship (+15–25%).',
+      verd_ar:'مرجع السوق المحلي', verd_en:'Local market reference', vc:'tv-neut'},
+    { lar:'قمة 52 أسبوع', len:'52-Week High',
+      val:`$${h52.toLocaleString('en')}`, sub_ar:`${(h52*AED).toLocaleString('ar',{maximumFractionDigits:0})} د.إ`, sub_en:`${(h52*AED).toLocaleString('en',{maximumFractionDigits:0})} AED`, cls:'s-up',
+      tip_ar:`أعلى سعر خلال العام الماضي. المسافة من القمة الحالية: ${Math.abs(fromPeak)}%. كلما ابتعد السعر عن القمة كلما أصبحت الأسعار "أرخص" نسبياً للمستثمرين طويلي الأمد.`,
+      tip_en:`Highest price in the past year. Distance from current: ${Math.abs(fromPeak)}%. The further below the peak, the more attractive for long-term investors.`,
+      verd_ar:'مقاومة بعيدة', verd_en:'Distant resistance', vc:'tv-bear'},
+    { lar:'قاع 52 أسبوع', len:'52-Week Low',
+      val:`$${l52.toLocaleString('en')}`, sub_ar:`${(l52*AED).toLocaleString('ar',{maximumFractionDigits:0})} د.إ`, sub_en:`${(l52*AED).toLocaleString('en',{maximumFractionDigits:0})} AED`, cls:'s-down',
+      tip_ar:'أدنى سعر خلال العام الماضي. إذا اقترب السعر الحالي منه فهذا يُشير إلى دعم تاريخي قوي محتمل — لكنه أيضاً علامة على ضعف السوق.',
+      tip_en:'Lowest price in the past year. If current price approaches it, this indicates potential strong historical support — but also signals market weakness.',
+      verd_ar:'دعم تاريخي', verd_en:'Historical support', vc:'tv-bull'},
+    { lar:'التراجع من الذروة', len:'Drawdown from Peak',
+      val:`${fromPeak}%`, sub_ar:`من $5,419 يناير 2026`, sub_en:`From $5,419 Jan 2026`, cls:parseFloat(fromPeak)<-10?'s-down':'s-up',
+      tip_ar:`تراجع ${Math.abs(fromPeak)}% من القمة. في الأسواق المالية: تراجع >10% = تصحيح، >20% = سوق هابطة رسمياً. هذا التراجع ${Math.abs(fromPeak)>20?'يُعدّ سوقاً هابطة':'لا يزال تصحيحاً'}.`,
+      tip_en:`Drawdown of ${Math.abs(fromPeak)}% from peak. Markets classify: >10% = correction, >20% = official bear market. This ${Math.abs(fromPeak)>20?'qualifies as a bear market':'remains a correction'}.`,
+      verd_ar:parseFloat(fromPeak)<-20?'سوق هابطة':'تصحيح', verd_en:parseFloat(fromPeak)<-20?'Bear Market':'Correction',
+      vc:parseFloat(fromPeak)<-20?'tv-bear':'tv-neut'},
+  ];
+
+  document.getElementById('statsGrid').innerHTML = stats.map(s => `
+    <div class="stat-card has-tip" data-tip="${(isEnglish ? s.tip_en : s.tip_ar).replace(/"/g,"'")} <br><span class=&quot;tip-verdict ${s.vc}&quot;>${isEnglish ? s.verd_en : s.verd_ar}</span>">
+      <div class="info-i">i</div>
+      <div class="s-label">${isEnglish ? s.len : s.lar}</div>
+      <div class="s-val ${s.cls}">${s.val}</div>
+      <div class="s-sub">${isEnglish ? s.sub_en : s.sub_ar}</div>
+    </div>`).join('');
+
+  /* — AED TABLE — */
+  const units = [
+    {ar:'1 جرام',       en:'1 gram',        g:1      },
+    {ar:'5 جرام',       en:'5 grams',       g:5      },
+    {ar:'10 جرام',      en:'10 grams',      g:10     },
+    {ar:'1 تولة',       en:'1 tola',        g:11.66  },
+    {ar:'½ أونصة',      en:'½ oz',          g:15.552 },
+    {ar:'1 أونصة',      en:'1 oz',          g:31.103 },
+    {ar:'50 جرام',      en:'50 grams',      g:50     },
+    {ar:'100 جرام',     en:'100 grams',     g:100    },
+    {ar:'1 كيلوجرام',   en:'1 kilogram',    g:1000   },
+  ];
+  document.getElementById('aedTbody').innerHTML = units.map(u => {
+    const usd = gUSD * u.g;
+    const a24 = gAED * u.g;
+    return `<tr>
+      <td class="tbl-g">${isEnglish ? u.en : u.ar}</td>
+      <td>${u.g.toLocaleString()}</td>
+      <td>$${usd.toLocaleString('en',{maximumFractionDigits:0})}</td>
+      <td class="tbl-g">${a24.toLocaleString('en',{maximumFractionDigits:0})} AED</td>
+      <td>${(a24*.875).toLocaleString('en',{maximumFractionDigits:0})} AED</td>
+      <td>${(a24*.75).toLocaleString('en',{maximumFractionDigits:0})} AED</td>
+      <td>${(a24*.583).toLocaleString('en',{maximumFractionDigits:0})} AED</td>
+    </tr>`;
+  }).join('');
+
+  /* — TECHNICAL LEVELS — */
+  const AR = isEnglish;
+  const levels = [
+    {uv:`$${s1}–$${s1+27}`, av:`${(s1*AED).toFixed(0)} AED`, type:AR?'Critical Support 🔴':'دعم حرج 🔴', note:AR?'MA200 — structural bull/bear dividing line':'MA200 — خط الفصل الهيكلي بين الصعود والهبوط', d:5, colorCls:'tbl-s'},
+    {uv:`$${s2}`,           av:`${(s2*AED).toFixed(0)} AED`, type:AR?'Strong Support 🟠':'دعم قوي 🟠',    note:AR?'2026 yearly open — correction floor':'افتتاح 2026 — أرضية التصحيح', d:4, colorCls:'tbl-s'},
+    {uv:`$${s3}`,           av:`${(s3*AED).toFixed(0)} AED`, type:AR?'Support':'دعم',                      note:AR?'First bearish target if s2 breaks':'الهدف الهبوطي الأول عند كسر الدعم الأعلى', d:3, colorCls:'tbl-s'},
+    {uv:`$${p.toLocaleString('en')} ←`, av:`${ozAED.toFixed(0)} AED`, type:AR?'Current Price ⭐':'السعر الحالي ⭐', note:AR?'Below MA50 — in downtrend':'تحت MA50 — في منطقة الضغط الهابط', d:0, colorCls:'', now:true},
+    {uv:`$${r1}`,           av:`${(r1*AED).toFixed(0)} AED`, type:AR?'Resistance 🔵':'مقاومة 🔵',          note:AR?'Must reclaim to stabilize':'يجب استرداده للاستقرار — أول اختبار', d:4, colorCls:'tbl-r'},
+    {uv:`$${r2}`,           av:`${(r2*AED).toFixed(0)} AED`, type:AR?'Resistance 🔵':'مقاومة 🔵',          note:AR?'Short-term downtrend cap':'سقف الاتجاه الهبوطي قصير المدى', d:3, colorCls:'tbl-r'},
+    {uv:`$${r3}`,           av:`${(r3*AED).toFixed(0)} AED`, type:AR?'Strong Resistance 🔵':'مقاومة قوية 🔵', note:AR?'Fibonacci 61.8% of Feb advance':'فيبوناتشي 61.8% من موجة صعود فبراير', d:4, colorCls:'tbl-r'},
+    {uv:'$5,000',           av:`${(5000*AED).toFixed(0)} AED`, type:AR?'Psychological ⚡':'نفسية كبرى ⚡', note:AR?'Bull/bear line — must reclaim for trend reversal':'خط الفصل النفسي: فوقه صاعد، تحته هابط', d:5, colorCls:'tbl-b'},
+  ];
+  document.getElementById('levelsTbody').innerHTML = levels.map(l => `
+    <tr style="${l.now?'background:rgba(201,168,76,0.09);':''}">
+      <td class="${l.colorCls}" style="${l.now?'color:var(--gold-light);font-weight:800;':''}">${l.uv}</td>
+      <td>${l.av}</td>
+      <td>${l.type}</td>
+      <td style="font-size:12px;color:var(--muted)">${l.note}</td>
+      <td>${l.d===0?'—':'<div class="conf-row">'+Array.from({length:5},(_,i)=>`<div class="cdot ${i<l.d?'cdot-on':'cdot-off'}"></div>`).join('')+'</div>'}</td>
+    </tr>`).join('');
+
+  /* — PROBABILITY RINGS — */
+  const probs = [
+    { lar:'قصير المدى', len:'Short-Term', sub_ar:'1–7 أيام', sub_en:'1–7 days',
+      bearPct: d?.short_bear ?? 65,
+      note_ar:'مبني على: الفيدرالي المتشدد + DXY مرتفع + كسر $5,000 + RSI عند 36 لم يصل الاستسلام بعد. الفائدة هي المحرك الأول.',
+      note_en:'Based on: hawkish Fed + elevated DXY + break below $5,000 + RSI at 36 not yet at capitulation. Interest rates are the primary driver.',
+      tgt_ar:`المقاومة الأولى: $${r1.toLocaleString()} | الدعم الأساسي: $${s2.toLocaleString()}`,
+      tgt_en:`First resistance: $${r1.toLocaleString()} | Key support: $${s2.toLocaleString()}`},
+    { lar:'متوسط المدى', len:'Mid-Term', sub_ar:'30–60 يوماً', sub_en:'30–60 days',
+      bearPct: d?.mid_bear ?? 55,
+      note_ar:'اجتماع الفيدرالي 29 أبريل هو المحرك الرئيسي. بيانات الوظائف الأمريكية وبيانات التضخم القادمة ستحدد الاتجاه. نطاق واسع يعكس الغموض.',
+      note_en:'April 29 FOMC meeting is the main catalyst. Upcoming US jobs and inflation data will determine direction. Wide range reflects high uncertainty.',
+      tgt_ar:'نطاق متوقع: $4,300–$4,800', tgt_en:'Expected range: $4,300–$4,800'},
+    { lar:'طويل المدى', len:'Long-Term', sub_ar:'6–12 شهراً', sub_en:'6–12 months',
+      bearPct: 30,
+      note_ar:'صعودي هيكلياً: JPMorgan $6,300 | Deutsche Bank $6,000 | Goldman $5,800 بنهاية 2026. البنوك المركزية تتسارع في شراء الذهب ضمن موجة التخلي عن الدولار.',
+      note_en:'Structurally bullish: JPMorgan $6,300 | Deutsche Bank $6,000 | Goldman $5,800 by end-2026. Central banks accelerating gold buying as part of de-dollarization trend.',
+      tgt_ar:'هدف مؤسسي: $5,500–$6,300 | شرط: خفض الفائدة في Q3–Q4 2026',
+      tgt_en:'Institutional target: $5,500–$6,300 | Condition: rate cut in Q3–Q4 2026'},
+  ];
+
+  document.getElementById('probRings').innerHTML = probs.map(pr => {
+    const bull = 100 - pr.bearPct;
+    const isBear = pr.bearPct >= 50;
+    const displayPct = isBear ? pr.bearPct : bull;
+    const hex = isBear ? '#E05252' : '#4ECBA5';
+    const r=46, cx=60, cy=60, circ=2*Math.PI*r;
+    const offset = circ*(1-displayPct/100);
+    const dirAr = isBear ? 'هبوطي' : 'صعودي';
+    const dirEn = isBear ? 'Bearish' : 'Bullish';
+    return `
+    <div class="prob-ring-row has-tip" data-tip="&lt;strong&gt;${isEnglish?pr.len:pr.lar}&lt;/strong&gt;&lt;br&gt;&lt;br&gt;${isEnglish?pr.note_en:pr.note_ar}&lt;br&gt;&lt;br&gt;${isEnglish?'Bull':'صعودي'}: &lt;strong style=color:var(--green)&gt;${bull}%&lt;/strong&gt; · ${isEnglish?'Bear':'هبوطي'}: &lt;strong style=color:var(--red)&gt;${pr.bearPct}%&lt;/strong&gt;">
+      <svg width="120" height="120" viewBox="0 0 120 120" style="transform:rotate(-90deg);flex-shrink:0">
+        <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="9"/>
+        <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${hex}" stroke-width="9"
+          stroke-linecap="round" stroke-dasharray="${circ.toFixed(2)}"
+          stroke-dashoffset="${offset.toFixed(2)}"
+          style="transition:stroke-dashoffset 1.3s cubic-bezier(.4,0,.2,1)"/>
+        <text x="${cx}" y="${cy-7}" style="fill:${hex};font-size:21px;font-weight:900;font-family:Cairo,Inter,sans-serif;dominant-baseline:middle;text-anchor:middle;transform:rotate(90deg);transform-origin:${cx}px ${cy}px">${displayPct}%</text>
+        <text x="${cx}" y="${cy+12}" style="fill:${hex};font-size:10px;font-family:Cairo,Inter,sans-serif;dominant-baseline:middle;text-anchor:middle;transform:rotate(90deg);transform-origin:${cx}px ${cy}px">${isEnglish?dirEn:dirAr}</text>
+      </svg>
+      <div class="prob-ring-info">
+        <div class="p-title">${isEnglish?pr.len:pr.lar} <span style="color:var(--muted);font-weight:400;font-size:11px">(${isEnglish?pr.sub_en:pr.sub_ar})</span></div>
+        <div class="p-sub">${isEnglish?pr.note_en:pr.note_ar}</div>
+        <div class="p-tgt">🎯 ${isEnglish?pr.tgt_en:pr.tgt_ar}</div>
+        <div class="p-badges">
+          <span class="p-badge ${isBear?'p-bear-b':'p-bull-b'}">${isBear?'📉':'📈'} ${isEnglish?(isBear?'Bearish':'Bullish'):(isBear?'هبوطي':'صعودي')} ${displayPct}%</span>
+          <span class="p-badge ${isBear?'p-bull-b':'p-bear-b'}">${isBear?'📈':'📉'} ${isEnglish?(isBear?'Bullish':'Bearish'):(isBear?'صعودي':'هبوطي')} ${isBear?bull:pr.bearPct}%</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  /* — ACTION TABLE — */
+  const acts = [
+    { ar:'قصير المدى', en:'Short-Term', badge_ar:'هبوطي بحذر', badge_en:'Cautious Short', bc:'b-bear',
+      eu:`$${(p*1.008).toFixed(0)}–$${(p*1.012).toFixed(0)}`,
+      ea:`${(p*1.008*AED).toFixed(0)}–${(p*1.012*AED).toFixed(0)} AED`,
+      tgt:`$${s2}`, sl:`$${r2}` },
+    { ar:'انتهازي شراء', en:'Opportunistic Buy', badge_ar:'انتظار رسملة', badge_en:'Wait for Capitulation', bc:'b-mix',
+      eu:`$${s1}–$${s2}`, ea:`${(s1*AED).toFixed(0)}–${(s2*AED).toFixed(0)} AED`,
+      tgt:`$${r2}+`, sl:`$${(s1*0.98).toFixed(0)}` },
+    { ar:'طويل المدى', en:'Long-Term', badge_ar:'تراكم تدريجي', badge_en:'Gradual Accumulation', bc:'b-bull',
+      eu:`$${s2}–$${r1}`, ea:`${(s2*AED).toFixed(0)}–${(r1*AED).toFixed(0)} AED`,
+      tgt:`$5,500–$6,300`, sl:'$4,000' },
+  ];
+  document.getElementById('actionTbody').innerHTML = acts.map(a => `
+    <tr>
+      <td>${isEnglish?a.en:a.ar}</td>
+      <td><span class="f-badge ${a.bc}">${isEnglish?a.badge_en:a.badge_ar}</span></td>
+      <td>${a.eu}</td><td>${a.ea}</td>
+      <td class="tbl-s">${a.tgt}</td>
+      <td class="tbl-r">${a.sl}</td>
+    </tr>`).join('');
+
+  // Re-apply lang to any newly inserted elements
+  applyLang();
+
+  // Draw charts
+  redrawCharts(p,s1,s2,s3,r1,r2,r3);
+}
+
+/* ──────────────────────────────────────────────────────
+   CHARTS
+────────────────────────────────────────────────────── */
+function redrawCharts(p,s1,s2,s3,r1,r2,r3) {
+  p  = p  || currentPrice;
+  s1 = s1 || 4224; s2=s2||4319; s3=s3||4395;
+  r1 = r1 || 4537; r2=r2||4670; r3=r3||4803;
+
+  const liq  = document.body.classList.contains('liquid');
+  const goldC = liq ? '#f0c040' : '#C9A84C';
+  const goldF = liq ? 'rgba(240,192,64,0.1)' : 'rgba(201,168,76,0.11)';
+  const gridC = liq ? 'rgba(255,255,255,0.06)' : 'rgba(201,168,76,0.07)';
+  const tickC = liq ? 'rgba(255,255,255,0.5)' : '#7A7A90';
+  const textC = liq ? 'rgba(255,255,255,0.85)' : '#E8E0CC';
+  const blueC = liq ? '#7db8ff' : '#5B8DEF';
+  const greenC= liq ? '#5effc4' : '#4ECBA5';
+  const redC  = liq ? '#ff6b6b' : '#E05252';
+
+  Chart.defaults.color = tickC;
+
+  Object.values(charts).forEach(c=>{ try{c.destroy()}catch(e){} });
+  charts={};
+
+  const labM = isEnglish
+    ? ['Oct','Nov','Dec','Jan','Feb','Mar']
+    : ['أكتوبر','نوفمبر','ديسمبر','يناير','فبراير','مارس'];
+  const usdH = [2980,3150,3420,4100,5100,p];
+  const aedH = usdH.map(v=>+(v*AED).toFixed(0));
+
+  charts.price = new Chart(document.getElementById('priceChart'),{
+    type:'line',
+    data:{labels:labM,datasets:[
+      {label:'USD/oz',data:usdH,borderColor:goldC,backgroundColor:goldF,fill:true,tension:.4,pointBackgroundColor:goldC,pointRadius:5,yAxisID:'y'},
+      {label:'AED/oz',data:aedH,borderColor:blueC,backgroundColor:'transparent',fill:false,tension:.4,pointBackgroundColor:blueC,pointRadius:5,borderDash:[6,3],yAxisID:'y2'}
+    ]},
+    options:{responsive:true,interaction:{mode:'index',intersect:false},
+      plugins:{legend:{labels:{color:textC}},tooltip:{callbacks:{label:ctx=>ctx.dataset.label.includes('AED')
+        ?` ${ctx.raw.toLocaleString()} AED`:` $${ctx.raw.toLocaleString()}`}}},
+      scales:{x:{grid:{color:gridC},ticks:{color:tickC}},
+        y:{grid:{color:gridC},ticks:{color:goldC,callback:v=>'$'+v.toLocaleString()},title:{display:true,text:'USD/oz',color:goldC}},
+        y2:{position:'right',grid:{display:false},ticks:{color:blueC,callback:v=>v.toLocaleString()+'د'},title:{display:true,text:'AED/oz',color:blueC}}}}
+  });
+
+  const gAED = (p/TROYZ)*AED;
+  charts.karat = new Chart(document.getElementById('karatChart'),{
+    type:'bar',
+    data:{labels:isEnglish?['24K','21K','18K','14K']:['عيار 24','عيار 21','عيار 18','عيار 14'],
+      datasets:[{label:isEnglish?'AED/gram':'درهم/جرام',
+        data:[gAED,gAED*.875,gAED*.75,gAED*.583].map(v=>+v.toFixed(1)),
+        backgroundColor:['rgba(201,168,76,.8)','rgba(201,168,76,.6)','rgba(201,168,76,.4)','rgba(201,168,76,.2)'],
+        borderColor:goldC,borderWidth:1,borderRadius:6}]},
+    options:{responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` ${ctx.raw} AED`}}},
+      scales:{x:{grid:{display:false},ticks:{color:textC}},y:{grid:{color:gridC},ticks:{color:tickC,callback:v=>v.toFixed(0)+'د'}}}}
+  });
+
+  charts.pie = new Chart(document.getElementById('factorPie'),{
+    type:'doughnut',
+    data:{labels:isEnglish?['Fed & Rates','Hormuz & Oil','USD Strength']:['الفيدرالي والفائدة','أزمة هرمز والنفط','قوة الدولار'],
+      datasets:[{data:[40,35,25],backgroundColor:['rgba(224,82,82,.7)','rgba(91,141,239,.7)','rgba(78,203,165,.7)'],
+        borderColor:[redC,blueC,greenC],borderWidth:2}]},
+    options:{responsive:true,cutout:'62%',plugins:{legend:{labels:{color:textC,padding:13}},tooltip:{callbacks:{label:ctx=>` ${ctx.raw}%`}}}}
+  });
+
+  const lvD=[s1,s2,s3,p,r1,r2,r3,5000];
+  const lvL=isEnglish?['MA200 Sup','2026 Open','Support 1','← Now','Resist 1','Resist 2','Fibo 61.8%','$5K Psych']:['MA200 دعم','افتتاح 2026','دعم أول','← الآن','مقاومة 1','مقاومة 2','فيبو 61.8%','$5,000 نفسي'];
+  const lvC=[greenC,greenC,greenC,goldC,redC,redC,redC,'#FF9F40'];
+  charts.levels = new Chart(document.getElementById('levelsChart'),{
+    type:'bar',
+    data:{labels:lvL,datasets:[{label:'USD',data:lvD,backgroundColor:lvC.map(c=>c+'44'),borderColor:lvC,borderWidth:2,borderRadius:4}]},
+    options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>{
+      const aed=(ctx.raw*AED).toLocaleString('en',{maximumFractionDigits:0});
+      return ` $${ctx.raw.toLocaleString()} | ${aed} AED`;
+    }}}},scales:{x:{grid:{color:gridC},ticks:{color:tickC,callback:v=>'$'+v.toLocaleString()},min:3700,max:5600},
+      y:{grid:{display:false},ticks:{color:textC}}}}
+  });
+
+  charts.forecast = new Chart(document.getElementById('forecastChart'),{
+    type:'line',
+    data:{labels:isEnglish?['Now','Apr','May','Jun','Sep','Dec']:['الآن','أبريل','مايو','يونيو','سبتمبر','ديسمبر'],
+      datasets:[
+        {label:isEnglish?'Bull':'صاعد', data:[p,p*1.04,p*1.09,p*1.14,p*1.22,p*1.40], borderColor:greenC,fill:false,tension:.4,borderWidth:2,borderDash:[8,4],pointRadius:4,pointBackgroundColor:greenC},
+        {label:isEnglish?'Base':'أساسي',data:[p,p*.98,p*1.01,p*1.04,p*1.10,p*1.19], borderColor:goldC,backgroundColor:goldF,fill:true,tension:.4,borderWidth:2.5,pointRadius:5,pointBackgroundColor:goldC},
+        {label:isEnglish?'Bear':'هابط', data:[p,s2,s1,p*.92,p*.95,p*1.03], borderColor:redC,fill:false,tension:.4,borderWidth:2,borderDash:[4,4],pointRadius:4,pointBackgroundColor:redC}
+      ]},
+    options:{responsive:true,interaction:{mode:'index',intersect:false},
+      plugins:{legend:{labels:{color:textC}},tooltip:{callbacks:{label:ctx=>{
+        const aed=(ctx.raw*AED).toLocaleString('en',{maximumFractionDigits:0});
+        return ` ${ctx.dataset.label}: $${ctx.raw.toLocaleString()} | ${aed} AED`;
+      }}}},scales:{x:{grid:{color:gridC},ticks:{color:tickC}},
+        y:{grid:{color:gridC},ticks:{color:tickC,callback:v=>'$'+v.toLocaleString()},min:3500,max:7200}}}
+  });
+}
+
+/* ──────────────────────────────────────────────────────
+   STATUS / DOT HELPERS
+────────────────────────────────────────────────────── */
+function setDot(state) {
+  const d = document.getElementById('uDot');
+  d.className = 'u-dot' + (state==='loading'?' loading':state==='error'?' error':'');
+}
+function setStatus(msg) {
+  document.getElementById('uStatus').textContent = msg;
+}
+
+/* ──────────────────────────────────────────────────────
+   COUNTDOWN TIMER
+────────────────────────────────────────────────────── */
+function resetCountdown() {
+  countdown = REFRESH_SEC;
+  clearInterval(countTimer);
+  countTimer = setInterval(()=>{
+    countdown--;
+    const pct = ((REFRESH_SEC-countdown)/REFRESH_SEC)*100;
+    document.getElementById('uProg').style.width = pct+'%';
+    const m = Math.floor(countdown/60), s = countdown%60;
+    document.getElementById('uCountdown').textContent =
+      `(${isEnglish?'next in':'التحديث بعد'} ${m}:${String(s).padStart(2,'0')})`;
+    if (countdown<=0){
+      clearInterval(countTimer);
+      fetchGoldData().then(()=>resetCountdown());
+    }
+  },1000);
+}
+
+/* ──────────────────────────────────────────────────────
+   GLOBAL TOOLTIP ENGINE — fixed position, never overlaps
+────────────────────────────────────────────────────── */
+(function() {
+  const tip = document.getElementById('tooltip-global');
+  let hideTimer = null;
+
+  function showTip(el, e) {
+    const content = el.dataset.tip;
+    if (!content) return;
+    clearTimeout(hideTimer);
+    tip.innerHTML = content;
+    tip.style.display = 'block';
+    tip.style.opacity = '0';
+    positionTip(e);
+    requestAnimationFrame(() => { tip.style.opacity = '1'; });
+  }
+
+  function positionTip(e) {
+    const tw = 268, th = tip.offsetHeight || 120;
+    const vw = window.innerWidth, vh = window.innerHeight;
+    let x = e.clientX + 14;
+    let y = e.clientY - th / 2;
+    if (x + tw > vw - 10) x = e.clientX - tw - 14;
+    if (y < 10) y = 10;
+    if (y + th > vh - 10) y = vh - th - 10;
+    tip.style.left = x + 'px';
+    tip.style.top  = y + 'px';
+  }
+
+  function hideTip() {
+    hideTimer = setTimeout(() => { tip.style.opacity='0'; setTimeout(()=>tip.style.display='none',150); }, 80);
+  }
+
+  document.addEventListener('mouseover', e => {
+    const el = e.target.closest('.has-tip');
+    if (el) showTip(el, e);
+  });
+  document.addEventListener('mousemove', e => {
+    if (tip.style.display === 'block') positionTip(e);
+  });
+  document.addEventListener('mouseout', e => {
+    if (!e.target.closest('.has-tip')) return;
+    hideTip();
+  });
+})();
+
+/* ──────────────────────────────────────────────────────
+   INIT
+────────────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded',()=>{
+  buildUI(null);
+  fetchGoldData();
+  resetCountdown();
+});
+</script>
+</body>
+</html>
