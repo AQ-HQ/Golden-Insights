@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تحليل الذهب XAU/USD | Gold Market Analysis</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cairo:wght@300;400;600;700&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #06060E;
+    --bg2: #0D0D1A;
+    --card: rgba(15,15,28,0.92);
+    --gold: #C9A84C;
+    --gold2: #E8C96A;
+    --gold3: #A07830;
+    --gold-dim: rgba(201,168,76,0.15);
+    --text: #F0E6D0;
+    --text2: #A8998A;
+    --bull: #4ADE80;
+    --bear: #F87171;
+    --neutral: #60A5FA;
+    --border: rgba(201,168,76,0.2);
+    --shadow: 0 8px 32px rgba(0,0,0,0.6);
+    --font-main: 'Cairo', sans-serif;
+    --font-display: 'Cinzel', serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+    --radius: 16px;
+  }
+  .liquid {
+    --bg: #080818;
+    --bg2: #0A0824;
+    --card: rgba(10,8,30,0.55);
+    --gold: #D4AF70;
+    --gold2: #F0CF90;
+    --border: rgba(180,140,255,0.25);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-main);
+    min-height: 100vh;
+    overflow-x: hidden;
+    transition: background 0.6s ease;
+  }
+  body.liquid {
+    background: radial-gradient(ellipse at 20% 0%, #1a0a3a 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 10%, #0d1a40 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 80%, #1a1208 0%, transparent 60%),
+                #070712;
+    animation: liquidBg 12s ease-in-out infinite alternate;
+  }
+  @keyframes liquidBg {
+    0%   { background-position: 0% 0%, 100% 0%, 50% 100%; }
+    100% { background-position: 10% 5%, 90% 15%, 55% 90%; }
+  }
+
+  /* ── PROGRESS BAR ── */
+  #progressBar {
+    position: fixed; top:0; left:0; right:0; height:3px; z-index:1000;
+    background: var(--border);
+  }
+  #progressFill {
+    height:100%; width:100%;
+    background: linear-gradient(90deg, var(--gold3), var(--gold), var(--gold2));
+    transition: width 1s linear;
+    box-shadow: 0 0 8px var(--gold);
+  }
+
+  /* ── CONTROL BAR ── */
+  #ctrlBar {
+    position: fixed; top:10px; left:50%; transform:translateX(-50%);
+    z-index:999;
+    display:flex; align-items:center; gap:0;
+    background: rgba(10,10,20,0.85);
+    backdrop-filter: blur(20px) saturate(180%);
+    border:1px solid var(--border);
+    border-radius:50px;
+    padding:6px 14px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.5), 0 0 0 1px rgba(201,168,76,0.08);
+  }
+  #ctrlBar button {
+    background: none; border:none; cursor:pointer;
+    color: var(--text2); font-size:12px; font-family:var(--font-main);
+    padding:6px 12px; border-radius:40px;
+    transition: all 0.3s ease; white-space:nowrap;
+  }
+  #ctrlBar button:hover, #ctrlBar button.active {
+    color: var(--gold); background: var(--gold-dim);
+  }
+  .ctrl-sep { width:1px; height:20px; background:var(--border); margin:0 4px; }
+
+  /* ── COUNTDOWN TEXT ── */
+  #countdown {
+    font-size:11px; color:var(--text2); font-family:var(--font-mono);
+    padding:0 6px;
+  }
+  #statusDot {
+    width:7px; height:7px; border-radius:50%;
+    background: var(--bull); display:inline-block;
+    margin-left:6px; animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  /* ── MAIN LAYOUT ── */
+  .container { max-width:1400px; margin:0 auto; padding:80px 24px 60px; }
+
+  /* ── HEADER ── */
+  .header {
+    text-align:center; margin-bottom:40px;
+    position:relative;
+  }
+  .header::after {
+    content:''; display:block;
+    width:200px; height:1px;
+    background:linear-gradient(90deg,transparent,var(--gold),transparent);
+    margin:20px auto 0;
+  }
+  .header-kicker {
+    font-family:var(--font-mono); font-size:11px; letter-spacing:3px;
+    color:var(--gold3); text-transform:uppercase; margin-bottom:8px;
+  }
+  .header h1 {
+    font-family:var(--font-display); font-size:clamp(28px,5vw,52px);
+    background:linear-gradient(135deg, var(--gold3), var(--gold2), var(--gold));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    background-clip:text; line-height:1.1;
+  }
+  .header-sub { font-size:13px; color:var(--text2); margin-top:10px; letter-spacing:1px; }
+
+  /* ── SNAPSHOT HERO ── */
+  .snapshot {
+    display:grid; grid-template-columns:1fr 1fr 1fr 1fr;
+    gap:16px; margin-bottom:28px;
+  }
+  @media(max-width:800px){ .snapshot{grid-template-columns:1fr 1fr;} }
+
+  .snap-card {
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:22px 20px;
+    position:relative; overflow:hidden;
+    transition:all 0.4s ease;
+    cursor:default;
+  }
+  .liquid .snap-card {
+    backdrop-filter:blur(28px) saturate(200%);
+    background: rgba(15,10,40,0.45);
+  }
+  .snap-card::before {
+    content:''; position:absolute; inset:0;
+    background:linear-gradient(135deg,rgba(201,168,76,0.04),transparent 60%);
+    pointer-events:none;
+  }
+  .snap-card:hover { border-color:var(--gold); transform:translateY(-2px); box-shadow:var(--shadow); }
+  .snap-label { font-size:11px; color:var(--text2); letter-spacing:2px; text-transform:uppercase; margin-bottom:8px; font-family:var(--font-mono); }
+  .snap-value { font-size:clamp(22px,3vw,32px); font-family:var(--font-mono); font-weight:500; color:var(--gold2); line-height:1; }
+  .snap-sub { font-size:12px; color:var(--text2); margin-top:6px; }
+  .snap-bull { color:var(--bull); }
+  .snap-bear { color:var(--bear); }
+
+  /* ── PRICE HERO (large) ── */
+  .price-hero-card {
+    grid-column:span 2;
+    background:linear-gradient(135deg,rgba(15,12,30,0.9),rgba(20,15,5,0.9));
+    border:1px solid var(--gold);
+  }
+  .liquid .price-hero-card {
+    backdrop-filter:blur(28px) saturate(200%);
+    background:rgba(20,10,50,0.5);
+  }
+  .price-hero-card .snap-value { font-size:clamp(32px,5vw,56px); }
+
+  /* ── SECTION TITLES ── */
+  .section-title {
+    font-family:var(--font-display); font-size:14px; letter-spacing:3px;
+    color:var(--gold3); text-transform:uppercase;
+    border-bottom:1px solid var(--border);
+    padding-bottom:10px; margin-bottom:20px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .section-title .icon { font-size:18px; }
+
+  /* ── AED TABLE ── */
+  .table-wrap {
+    background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+    overflow:auto; margin-bottom:28px;
+  }
+  .liquid .table-wrap { backdrop-filter:blur(28px) saturate(200%); background:rgba(15,10,40,0.45); }
+  table { width:100%; border-collapse:collapse; font-family:var(--font-mono); font-size:12px; }
+  th { background:rgba(201,168,76,0.1); color:var(--gold); padding:10px 14px; text-align:center;
+       font-weight:600; letter-spacing:1px; border-bottom:1px solid var(--border); white-space:nowrap; }
+  td { padding:9px 14px; text-align:center; border-bottom:1px solid rgba(201,168,76,0.06);
+       color:var(--text); transition:background 0.2s; white-space:nowrap; }
+  tr:hover td { background:var(--gold-dim); }
+  td:first-child { color:var(--text2); text-align:right; font-size:11px; }
+  .t-24 { color:var(--gold2); }
+  .t-21 { color:#C0A060; }
+  .t-18 { color:#A08850; }
+  .t-14 { color:#887048; }
+
+  /* ── FACTORS ── */
+  .factors-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:28px; }
+  @media(max-width:900px){ .factors-grid{grid-template-columns:1fr;} }
+
+  .factor-card {
+    background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+    padding:24px; position:relative; overflow:hidden;
+    transition:all 0.4s ease;
+  }
+  .liquid .factor-card { backdrop-filter:blur(28px) saturate(200%); background:rgba(15,10,40,0.45); }
+  .factor-card:hover { border-color:var(--gold); transform:translateY(-3px); box-shadow:var(--shadow); }
+  .factor-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px; }
+  .factor-name { font-family:var(--font-display); font-size:13px; color:var(--gold2); letter-spacing:1px; }
+  .factor-weight {
+    font-family:var(--font-mono); font-size:11px;
+    background:var(--gold-dim); color:var(--gold);
+    padding:3px 10px; border-radius:20px; border:1px solid var(--border);
+  }
+  .factor-bias { display:flex; align-items:center; gap:6px; margin-bottom:10px; }
+  .bias-tag { font-size:10px; padding:2px 8px; border-radius:4px; font-family:var(--font-mono); letter-spacing:1px; }
+  .bias-bull { background:rgba(74,222,128,0.15); color:var(--bull); border:1px solid rgba(74,222,128,0.3); }
+  .bias-bear { background:rgba(248,113,113,0.15); color:var(--bear); border:1px solid rgba(248,113,113,0.3); }
+  .bias-neu  { background:rgba(96,165,250,0.15); color:var(--neutral); border:1px solid rgba(96,165,250,0.3); }
+  .conf-tag { font-size:10px; padding:2px 8px; border-radius:4px; font-family:var(--font-mono); color:var(--text2); border:1px solid var(--border); }
+  .factor-body { font-size:12.5px; color:var(--text2); line-height:1.8; }
+  .factor-body p { margin-bottom:10px; }
+  .factor-body p:last-child { margin-bottom:0; }
+
+  /* ── TECHNICAL LEVELS ── */
+  .tech-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:28px; }
+  @media(max-width:700px){ .tech-grid{grid-template-columns:1fr;} }
+
+  .level-card {
+    background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+    padding:20px; overflow:auto;
+  }
+  .liquid .level-card { backdrop-filter:blur(28px) saturate(200%); background:rgba(15,10,40,0.45); }
+  .level-row { display:flex; justify-content:space-between; align-items:center;
+               padding:8px 0; border-bottom:1px solid rgba(201,168,76,0.06); font-size:12px; }
+  .level-row:last-child { border-bottom:none; }
+  .level-label { color:var(--text2); font-family:var(--font-mono); font-size:11px; }
+  .level-val { font-family:var(--font-mono); color:var(--text); }
+  .level-dots { letter-spacing:2px; }
+  .level-current { background:var(--gold-dim); border-radius:6px; padding:8px 12px; margin:4px -12px; }
+  .level-current .level-label { color:var(--gold); }
+  .level-current .level-val { color:var(--gold2); font-weight:600; }
+  .dot-gold { color:var(--gold); }
+  .dot-dim  { color:var(--border); }
+
+  /* ── CHARTS ── */
+  .charts-grid { display:grid; grid-template-columns:2fr 1fr; gap:16px; margin-bottom:28px; }
+  .charts-row2 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; margin-bottom:28px; }
+  @media(max-width:900px){ .charts-grid{grid-template-columns:1fr;} .charts-row2{grid-template-columns:1fr;} }
+
+  .chart-card {
+    background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+    padding:20px;
+  }
+  .liquid .chart-card { backdrop-filter:blur(28px) saturate(200%); background:rgba(15,10,40,0.45); }
+  .chart-title { font-size:11px; color:var(--text2); letter-spacing:2px; text-transform:uppercase;
+                 font-family:var(--font-mono); margin-bottom:14px; }
+  .chart-canvas-wrap { position:relative; }
+
+  /* ── PROBABILITY RINGS ── */
+  .prob-section { margin-bottom:28px; }
+  .prob-row {
+    background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+    padding:20px 28px; display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:12px; transition:all 0.4s ease;
+    flex-wrap:wrap; gap:16px;
+  }
+  .liquid .prob-row { backdrop-filter:blur(28px) saturate(200%); background:rgba(15,10,40,0.45); }
+  .prob-row:hover { border-color:var(--gold); }
+  .prob-info { flex:1; min-width:200px; }
+  .prob-tf { font-family:var(--font-display); font-size:12px; color:var(--gold); letter-spacing:2px; margin-bottom:6px; }
+  .prob-rationale { font-size:12px; color:var(--text2); line-height:1.6; margin-bottom:8px; }
+  .prob-target { font-family:var(--font-mono); font-size:11px; color:var(--text); margin-bottom:8px; }
+  .prob-badges { display:flex; gap:8px; flex-wrap:wrap; }
+  .prob-badge { font-size:11px; padding:3px 10px; border-radius:20px; font-family:var(--font-mono); }
+  .pb-bull { background:rgba(74,222,128,0.15); color:var(--bull); border:1px solid rgba(74,222,128,0.3); }
+  .pb-bear { background:rgba(248,113,113,0.15); color:var(--bear); border:1px solid rgba(248,113,113,0.3); }
+  .prob-ring-wrap { display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+
+  /* ── RISK SCENARIOS ── */
+  .risk-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:28px; }
+  @media(max-width:700px){ .risk-grid{grid-template-columns:1fr;} }
+
+  .risk-card {
+    background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+    padding:24px;
+  }
+  .liquid .risk-card { backdrop-filter:blur(28px) saturate(200%); background:rgba(15,10,40,0.45); }
+  .risk-title { font-family:var(--font-display); font-size:13px; margin-bottom:16px; letter-spacing:1px; }
+  .risk-bull-title { color:var(--bull); }
+  .risk-bear-title { color:var(--bear); }
+  .risk-item { display:flex; gap:10px; margin-bottom:12px; font-size:12.5px; color:var(--text2); line-height:1.5; }
+  .risk-item .num { font-family:var(--font-mono); color:var(--gold3); font-size:11px; flex-shrink:0; margin-top:2px; }
+
+  /* ── ACTION TABLE ── */
+  .action-wrap {
+    background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+    padding:24px; margin-bottom:28px; overflow:auto;
+  }
+  .liquid .action-wrap { backdrop-filter:blur(28px) saturate(200%); background:rgba(15,10,40,0.45); }
+
+  /* ── VERDICT ── */
+  .verdict-card {
+    background:linear-gradient(135deg,rgba(20,15,5,0.95),rgba(15,10,30,0.95));
+    border:1px solid var(--gold); border-radius:var(--radius);
+    padding:32px; text-align:center; margin-bottom:28px; position:relative; overflow:hidden;
+  }
+  .liquid .verdict-card { backdrop-filter:blur(28px) saturate(200%); }
+  .verdict-card::before {
+    content:''; position:absolute; inset:0;
+    background:radial-gradient(ellipse at center,rgba(201,168,76,0.06),transparent 70%);
+  }
+  .verdict-text {
+    font-family:var(--font-display); font-size:clamp(14px,2vw,18px);
+    color:var(--text); line-height:1.6; margin-bottom:24px; position:relative;
+  }
+  .verdict-tags { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; position:relative; }
+  .vtag { font-size:11px; padding:6px 16px; border-radius:30px; font-family:var(--font-mono); letter-spacing:1px; }
+  .vt-bull { background:rgba(74,222,128,0.15); color:var(--bull); border:1px solid rgba(74,222,128,0.4); }
+  .vt-bear { background:rgba(248,113,113,0.15); color:var(--bear); border:1px solid rgba(248,113,113,0.4); }
+  .vt-gold { background:var(--gold-dim); color:var(--gold2); border:1px solid var(--border); }
+  .vt-blue { background:rgba(96,165,250,0.15); color:var(--neutral); border:1px solid rgba(96,165,250,0.3); }
+  .vt-orange { background:rgba(251,146,60,0.15); color:#FB923C; border:1px solid rgba(251,146,60,0.3); }
+
+  /* ── SYSTEM PROMPT BOX ── */
+  .prompt-box {
+    background:rgba(5,5,12,0.9); border:1px solid rgba(201,168,76,0.15);
+    border-radius:var(--radius); padding:20px; margin-bottom:28px;
+    position:relative;
+  }
+  .prompt-box summary {
+    font-family:var(--font-mono); font-size:11px; color:var(--gold3);
+    letter-spacing:2px; cursor:pointer; user-select:none;
+    list-style:none; display:flex; align-items:center; gap:8px;
+  }
+  .prompt-box summary::before { content:'▶'; transition:transform 0.3s; }
+  details[open] .prompt-box summary::before { transform:rotate(90deg); }
+  .prompt-box pre {
+    font-family:var(--font-mono); font-size:10px; color:var(--text2);
+    line-height:1.7; overflow:auto; max-height:300px;
+    margin-top:14px; white-space:pre-wrap; word-break:break-word;
+  }
+  details { background:none; border:none; }
+
+  /* ── SKELETON ── */
+  .skeleton { position:relative; overflow:hidden; }
+  .skeleton::after {
+    content:''; position:absolute; inset:0;
+    background:linear-gradient(90deg,transparent 30%,rgba(201,168,76,0.08) 50%,transparent 70%);
+    animation:shimmer 1.5s infinite;
+  }
+  @keyframes shimmer { 0%{transform:translateX(-100%)} 100%{transform:translateX(100%)} }
+
+  /* ── TOOLTIP ── */
+  [data-tip] { position:relative; }
+  [data-tip]:hover .tip-box { display:block; }
+  .tip-box {
+    display:none; position:absolute; z-index:200;
+    background:rgba(5,5,15,0.97); border:1px solid var(--border);
+    border-radius:10px; padding:12px; min-width:200px; max-width:280px;
+    font-size:11px; color:var(--text2); line-height:1.6;
+    bottom:calc(100% + 8px); left:50%; transform:translateX(-50%);
+    box-shadow:0 8px 32px rgba(0,0,0,0.7);
+    pointer-events:none;
+  }
+  .tip-box .tip-title { color:var(--gold); font-weight:700; margin-bottom:4px; font-family:var(--font-mono); font-size:10px; }
+  .tip-box .tip-verdict { margin-top:6px; font-size:10px; padding:2px 8px; border-radius:4px; display:inline-block; }
+
+  /* ── FOOTER ── */
+  .footer { text-align:center; padding:20px; font-size:11px; color:var(--text2); font-family:var(--font-mono); }
+
+  /* ── LTR override ── */
+  body.ltr { direction:ltr; text-align:left; font-family:'Cinzel','IBM Plex Mono',sans-serif; }
+  body.ltr .snap-card, body.ltr td:first-child { text-align:left; }
+  body.ltr .tip-box { left:auto; right:0; transform:none; }
+
+  /* ── GLOW LINE ── */
+  .glow-divider { width:100%; height:1px; background:linear-gradient(90deg,transparent,var(--gold),transparent); margin:8px 0 28px; opacity:0.4; }
+</style>
+</head>
+<body>
+
+<!-- PROGRESS BAR -->
+<div id="progressBar"><div id="progressFill"></div></div>
+
+<!-- CONTROL BAR -->
+<div id="ctrlBar">
+  <button id="btnLiquid" onclick="toggleLiquid()">✦ Liquid Glass</button>
+  <div class="ctrl-sep"></div>
+  <button id="btnLang" onclick="toggleLang()">العربية / EN</button>
+  <div class="ctrl-sep"></div>
+  <span id="countdown">5:00</span>
+  <span id="statusDot"></span>
+  <div class="ctrl-sep"></div>
+  <button onclick="doRefresh(true)">↻ <span class="t-refresh">تحديث</span></button>
+</div>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-kicker t-kicker">تحليل سوق الذهب · مخصص للمستثمر الإماراتي</div>
+    <h1>XAU / USD · Gold Market Dashboard</h1>
+    <div class="header-sub t-sub">بيانات حية — تحديث تلقائي كل ٥ دقائق · Live Data — Auto-Refreshes Every 5 Min</div>
+  </div>
+
+  <!-- SNAPSHOT -->
+  <div class="section-title"><span class="icon">◈</span><span class="t-s1">لمحة سريعة · SNAPSHOT</span></div>
+  <div class="snapshot">
+    <div class="snap-card price-hero-card" data-tip>
+      <div class="snap-label t-price-label">سعر الذهب الآني XAU/USD</div>
+      <div class="snap-value" id="livePrice">$4,473.38</div>
+      <div class="snap-sub" id="livePriceSub">آخر تحديث: اليوم · ١ أوقية = <span id="priceAED">16,427</span> د.إ</div>
+      <div class="tip-box"><div class="tip-title">LIVE SPOT PRICE</div>سعر أوقية الذهب بالدولار الأمريكي لحظياً من الأسواق العالمية<div class="tip-verdict" style="background:rgba(201,168,76,0.1);color:var(--gold)">محايد على المدى القصير</div></div>
+    </div>
+    <div class="snap-card" data-tip>
+      <div class="snap-label t-change-label">التغيير اليوم</div>
+      <div class="snap-value snap-bear" id="livePct">−0.44%</div>
+      <div class="snap-sub" id="liveChg">−$19.61 من $4,492.99</div>
+      <div class="tip-box"><div class="tip-title">DAILY CHANGE</div>حركة السعر منذ الإغلاق السابق — سلبي يعكس ضغط البيع<div class="tip-verdict" style="background:rgba(248,113,113,0.1);color:var(--bear)">هبوطي</div></div>
+    </div>
+    <div class="snap-card" data-tip>
+      <div class="snap-label t-52wk-label">نطاق ٥٢ أسبوعاً</div>
+      <div class="snap-value" style="font-size:16px;line-height:1.4;">$2,956 – $5,595</div>
+      <div class="snap-sub">ذروة: $5,595.46 · قاع: $2,956.60</div>
+      <div class="tip-box"><div class="tip-title">52-WEEK RANGE</div>الذهب وصل ذروة $5,595 في يناير ثم تراجع حاداً بعد الأحداث الجيوسياسية<div class="tip-verdict" style="background:rgba(201,168,76,0.1);color:var(--gold)">محايد</div></div>
+    </div>
+    <div class="snap-card" data-tip>
+      <div class="snap-label t-dd-label">التراجع من الذروة</div>
+      <div class="snap-value snap-bear">−20.1%</div>
+      <div class="snap-sub">من $5,595 → $4,473 · ≈ −$1,122</div>
+      <div class="tip-box"><div class="tip-title">DRAWDOWN FROM PEAK</div>تراجع بأكثر من ٢٠٪ من الذروة — مؤشر دخول المنطقة الهبوطية التقنية<div class="tip-verdict" style="background:rgba(248,113,113,0.1);color:var(--bear)">تصحيح حاد</div></div>
+    </div>
+  </div>
+
+  <!-- AED TABLE -->
+  <div class="section-title"><span class="icon">◈</span><span class="t-s2">جدول أسعار الذهب بالدرهم الإماراتي · AED CONVERSION TABLE</span></div>
+  <div class="table-wrap">
+    <table id="aedTable">
+      <thead>
+        <tr>
+          <th class="t-th0">الوحدة</th>
+          <th>USD</th>
+          <th class="t-24">24K درهم</th>
+          <th class="t-21">21K درهم</th>
+          <th class="t-18">18K درهم</th>
+          <th class="t-14">14K درهم</th>
+        </tr>
+      </thead>
+      <tbody id="aedBody"></tbody>
+    </table>
+  </div>
+
+  <!-- CHARTS ROW 1 -->
+  <div class="section-title"><span class="icon">◈</span><span class="t-s3">الرسوم البيانية · CHARTS</span></div>
+  <div class="charts-grid">
+    <div class="chart-card">
+      <div class="chart-title t-c1">تاريخ السعر — ٦ أشهر (USD + AED)</div>
+      <div class="chart-canvas-wrap"><canvas id="chartHistory" height="220"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title t-c2">توزيع العوامل المحركة</div>
+      <div class="chart-canvas-wrap"><canvas id="chartFactors" height="220"></canvas></div>
+    </div>
+  </div>
+  <div class="charts-row2">
+    <div class="chart-card">
+      <div class="chart-title t-c3">سعر الغرام بالدرهم — حسب العيار</div>
+      <div class="chart-canvas-wrap"><canvas id="chartKarat" height="200"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title t-c4">مستويات الدعم والمقاومة</div>
+      <div class="chart-canvas-wrap"><canvas id="chartLevels" height="200"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title t-c5">توقعات السيناريوهات — نهاية ٢٠٢٦</div>
+      <div class="chart-canvas-wrap"><canvas id="chartScenario" height="200"></canvas></div>
+    </div>
+  </div>
+
+  <!-- TOP 3 FACTORS -->
+  <div class="section-title"><span class="icon">◈</span><span class="t-s4">أهم ٣ عوامل محركة · TOP 3 DRIVING FACTORS</span></div>
+  <div class="factors-grid">
+    <div class="factor-card">
+      <div class="factor-header">
+        <div class="factor-name t-f1n">الفيدرالي الأمريكي والتضخم</div>
+        <div class="factor-weight">40٪</div>
+      </div>
+      <div class="factor-bias">
+        <span class="bias-tag bias-bear t-f1b">هبوطي</span>
+        <span class="conf-tag">ثقة ٨٢٪</span>
+      </div>
+      <div class="factor-body t-f1">
+        <p>رفعت منظمة OECD توقعات التضخم الأمريكي إلى 4.2٪ مقارنةً بهدف الفيدرالي 2٪، مما أقنع الأسواق بأن خفض الفائدة ليس وارداً في 2026. أدوات CME FedWatch تشير إلى احتمال 50٪+ لرفع إضافي بنهاية العام — وهو سيناريو سلبي كلاسيكي للذهب.</p>
+        <p>الذهب لا يدفع فوائد، لذا ارتفاع التكلفة الفرصية (العائد الحقيقي للسندات) يُحوّل رأس المال نحو الدولار والخزينة. الدولار القوي يُرخّص الذهب بالعملات الأخرى ويُقلص الطلب الخارجي، خاصةً من الصين والهند.</p>
+        <p>ما يُلغي هذا العامل: بيانات تضخم أدنى من التوقعات، أو هدوء في سوق العمل يضطر الفيدرالي للتراجع عن لهجته المتشددة. حتى ذلك الحين، الضغط على الذهب قائم.</p>
+      </div>
+    </div>
+    <div class="factor-card">
+      <div class="factor-header">
+        <div class="factor-name t-f2n">التوترات الجيوسياسية — إيران وهرمز</div>
+        <div class="factor-weight">35٪</div>
+      </div>
+      <div class="factor-bias">
+        <span class="bias-tag bias-neu t-f2b">متضارب</span>
+        <span class="conf-tag">ثقة ٦٨٪</span>
+      </div>
+      <div class="factor-body t-f2">
+        <p>الضربات الأمريكية والإسرائيلية على إيران رفعت أسعار النفط وأسعار التأمين البحري في مضيق هرمز. المفارقة: الذهب لم يرتفع كما يُتوقع في أزمات كهذه — لأن المستثمرين فضّلوا الدولار وسندات الخزينة كملاذ أكثر سيولة.</p>
+        <p>التصعيد دفع أسواق الخليج هبوطاً وأقلص الشهية على المخاطرة عالمياً. لكنه في آن واحد رفع توقعات التضخم عبر النفط (WTI فوق $90)، مما يُعزز الحجة المتشددة للفيدرالي ويزيد الضغط على الذهب.</p>
+        <p>السيناريو الصاعد: إغلاق هرمز فعلياً أو ضربات مباشرة على البنية التحتية الإيرانية ستُعيد الذهب دفة القيادة كملاذ آمن وتدفعه فوق $4,800 بسرعة.</p>
+      </div>
+    </div>
+    <div class="factor-card">
+      <div class="factor-header">
+        <div class="factor-name t-f3n">مؤشر الدولار DXY وتدفقات ETF</div>
+        <div class="factor-weight">25٪</div>
+      </div>
+      <div class="factor-bias">
+        <span class="bias-tag bias-bear t-f3b">هبوطي</span>
+        <span class="conf-tag">ثقة ٧١٪</span>
+      </div>
+      <div class="factor-body t-f3">
+        <p>الدولار يختبر مناطق مقاومة رئيسية. تدفقات خروج من صناديق ETF الذهبية (GLD SPDR) تواصل الضغط على السعر. المتداولون يرون أي ارتداد في الذهب فرصة بيع في الوقت الراهن، ما يحدّ السقف.</p>
+        <p>الفائدة الحقيقية (اسمية ناقص التضخم) ارتفعت إلى مستويات لم تُشاهَد منذ 2007 في بعض أجزاء منحنى العائد. هذا يُقلص جاذبية الذهب غير المُدرّ للفوائد بشكل دراماتيكي.</p>
+        <p>ما يُغيّر المعادلة: تراجع DXY تحت 100 أو تحول صناديق ETF الكبرى إلى تراكم الذهب من جديد — وهو ما سيُشير إلى تغير نظامي في معنويات السوق نحو الذهب.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- TECHNICAL LEVELS -->
+  <div class="section-title"><span class="icon">◈</span><span class="t-s5">المستويات التقنية · TECHNICAL LEVELS</span></div>
+  <div class="tech-grid">
+    <div class="level-card">
+      <div class="section-title" style="font-size:11px;margin-bottom:14px;padding-bottom:8px;">USD — الدولار</div>
+      <div class="level-row"><span class="level-label">مقاومة ٣ · الذروة السنوية</span><span class="level-val">$5,595 <span class="level-dots"><span class="dot-gold">●●●</span><span class="dot-dim">●●</span></span></span></div>
+      <div class="level-row"><span class="level-label">مقاومة ٢</span><span class="level-val">$5,013 <span class="level-dots"><span class="dot-gold">●●●</span><span class="dot-dim">●●</span></span></span></div>
+      <div class="level-row"><span class="level-label">مقاومة ١ · فيبوناتشي 61.8٪</span><span class="level-val">$4,695 <span class="level-dots"><span class="dot-gold">●●●●</span><span class="dot-dim">●</span></span></span></div>
+      <div class="level-row level-current"><span class="level-label">● السعر الحالي</span><span class="level-val">$4,473</span></div>
+      <div class="level-row"><span class="level-label">الافتتاح السنوي ٢٠٢٦</span><span class="level-val">$4,285 <span class="level-dots"><span class="dot-gold">●●●●</span><span class="dot-dim">●</span></span></span></div>
+      <div class="level-row"><span class="level-label">دعم ١ · قناة صاعدة</span><span class="level-val">$4,325 <span class="level-dots"><span class="dot-gold">●●●●</span><span class="dot-dim">●</span></span></span></div>
+      <div class="level-row"><span class="level-label">دعم ٢ · MA200 أسبوعي</span><span class="level-val">$4,081 <span class="level-dots"><span class="dot-gold">●●●●●</span></span></span></div>
+      <div class="level-row"><span class="level-label">مستوى نفسي</span><span class="level-val">$4,000 <span class="level-dots"><span class="dot-gold">●●●●●</span></span></span></div>
+    </div>
+    <div class="level-card">
+      <div class="section-title" style="font-size:11px;margin-bottom:14px;padding-bottom:8px;">AED — الدرهم الإماراتي</div>
+      <div class="level-row"><span class="level-label">مقاومة ٣ · الذروة السنوية</span><span class="level-val">20,549 <span class="level-dots"><span class="dot-gold">●●●</span><span class="dot-dim">●●</span></span></span></div>
+      <div class="level-row"><span class="level-label">مقاومة ٢</span><span class="level-val">18,398 <span class="level-dots"><span class="dot-gold">●●●</span><span class="dot-dim">●●</span></span></span></div>
+      <div class="level-row"><span class="level-label">مقاومة ١</span><span class="level-val">17,235 <span class="level-dots"><span class="dot-gold">●●●●</span><span class="dot-dim">●</span></span></span></div>
+      <div class="level-row level-current"><span class="level-label">● السعر الحالي</span><span class="level-val" id="aedCurrentLevel">16,427</span></div>
+      <div class="level-row"><span class="level-label">الافتتاح السنوي ٢٠٢٦</span><span class="level-val">15,731 <span class="level-dots"><span class="dot-gold">●●●●</span><span class="dot-dim">●</span></span></span></div>
+      <div class="level-row"><span class="level-label">دعم ١</span><span class="level-val">15,882 <span class="level-dots"><span class="dot-gold">●●●●</span><span class="dot-dim">●</span></span></span></div>
+      <div class="level-row"><span class="level-label">دعم ٢ · MA200</span><span class="level-val">14,981 <span class="level-dots"><span class="dot-gold">●●●●●</span></span></span></div>
+      <div class="level-row"><span class="level-label">مستوى نفسي</span><span class="level-val">14,690 <span class="level-dots"><span class="dot-gold">●●●●●</span></span></span></div>
+    </div>
+  </div>
+
+  <!-- PROBABILITY RINGS -->
+  <div class="section-title"><span class="icon">◈</span><span class="t-s6">خواتم الاحتمالية · PROBABILITY RINGS</span></div>
+  <div class="prob-section">
+    <div class="prob-row">
+      <div class="prob-info">
+        <div class="prob-tf t-p1tf">المدى القصير · SHORT-TERM (1–7 أيام)</div>
+        <div class="prob-rationale t-p1r">ضغط من الفيدرالي المتشدد وبيانات التضخم القادمة. الذهب يتداول تحت مستويات مفصلية. التحيز الهبوطي في حالة غياب محفزات جيوسياسية جديدة.</div>
+        <div class="prob-target t-p1tgt">نطاق المستهدف: $4,325 – $4,516</div>
+        <div class="prob-badges">
+          <span class="prob-badge pb-bull t-pbull">صاعد ٣٨٪</span>
+          <span class="prob-badge pb-bear t-pbear">هابط ٦٢٪</span>
+        </div>
+      </div>
+      <div class="prob-ring-wrap"><svg id="ring1" viewBox="0 0 120 120" width="120" height="120"></svg></div>
+    </div>
+    <div class="prob-row">
+      <div class="prob-info">
+        <div class="prob-tf t-p2tf">المدى المتوسط · MID-TERM (30–60 يوماً)</div>
+        <div class="prob-rationale t-p2r">التطورات الجيوسياسية مع إيران وعمليات البنوك المركزية قد تُعيد التوازن. الطلب الفيزيائي من الهند والصين عند مستويات سعرية حالية محتمل يُوفر دعماً.</div>
+        <div class="prob-target t-p2tgt">نطاق المستهدف: $4,200 – $4,800</div>
+        <div class="prob-badges">
+          <span class="prob-badge pb-bull t-pbull2">صاعد ٤٨٪</span>
+          <span class="prob-badge pb-bear t-pbear2">هابط ٥٢٪</span>
+        </div>
+      </div>
+      <div class="prob-ring-wrap"><svg id="ring2" viewBox="0 0 120 120" width="120" height="120"></svg></div>
+    </div>
+    <div class="prob-row">
+      <div class="prob-info">
+        <div class="prob-tf t-p3tf">المدى البعيد · LONG-TERM (6–12 شهراً)</div>
+        <div class="prob-rationale t-p3r">الإطار الكلي لا يزال داعماً: ديون حكومية ضخمة، مشتريات بنوك مركزية مستمرة، وتراجع متوقع في قوة الدولار على المدى البعيد. الذهب استراتيجياً جاذب فوق $4,000.</div>
+        <div class="prob-target t-p3tgt">نطاق المستهدف: $4,500 – $5,800</div>
+        <div class="prob-badges">
+          <span class="prob-badge pb-bull t-pbull3">صاعد ٦٥٪</span>
+          <span class="prob-badge pb-bear t-pbear3">هابط ٣٥٪</span>
+        </div>
+      </div>
+      <div class="prob-ring-wrap"><svg id="ring3" viewBox="0 0 120 120" width="120" height="120"></svg></div>
+    </div>
+  </div>
+
+  <!-- RISK SCENARIOS -->
+  <div class="section-title"><span class="icon">◈</span><span class="t-s7">سيناريوهات المخاطر · RISK SCENARIOS</span></div>
+  <div class="risk-grid">
+    <div class="risk-card">
+      <div class="risk-title risk-bear-title t-bear-title">🔴 سيناريو الهبوط · BEAR CASE</div>
+      <div class="risk-item"><span class="num">01</span><span class="t-b1">بيانات تضخم أمريكية (PCE/CPI) تُفاجئ بارتفاع فوق 4.5٪، ما يُعزز خطاب الفيدرالي المتشدد ويرفع العائدات الحقيقية بشكل حاد.</span></div>
+      <div class="risk-item"><span class="num">02</span><span class="t-b2">التوصل لوقف إطلاق نار في النزاع الإيراني يُزيل علاوة المخاطر الجيوسياسية من الأسواق بشكل مفاجئ.</span></div>
+      <div class="risk-item"><span class="num">03</span><span class="t-b3">كسر مستوى الدعم $4,325 بإغلاق أسبوعي واضح يُفتح الباب لاختبار $4,081 ثم $3,870.</span></div>
+      <div class="risk-item"><span class="num">04</span><span class="t-b4">موجة تصفية إجبارية من صناديق الرافعة المالية تُضاعف الضغط، مع انعدام الطلب الفيزيائي الموسمي في مرحلة الربع الثاني.</span></div>
+    </div>
+    <div class="risk-card">
+      <div class="risk-title risk-bull-title t-bull-title">🟢 سيناريو الصعود · BULL CASE</div>
+      <div class="risk-item"><span class="num">01</span><span class="t-g1">تصعيد عسكري جوهري في منطقة هرمز أو ضربات تطال البنية النفطية السعودية تُشعل موجة ملاذ آمن استثنائية.</span></div>
+      <div class="risk-item"><span class="num">02</span><span class="t-g2">تراجع مفاجئ في بيانات سوق العمل يُضطر الفيدرالي لتلطيف خطابه وفتح باب خفض الفائدة مجدداً.</span></div>
+      <div class="risk-item"><span class="num">03</span><span class="t-g3">تراكم ضخم من بنوك مركزية (الصين، روسيا، الهند، تركيا) يتجاوز التوقعات ويُغير توازن العرض والطلب.</span></div>
+      <div class="risk-item"><span class="num">04</span><span class="t-g4">تراجع DXY بشكل حاد تحت مستويات 100 نقطة يُعيد جاذبية الذهب للمشترين الأجانب ويُحرك موجة صعود.</span></div>
+    </div>
+  </div>
+
+  <!-- ACTION TABLE -->
+  <div class="section-title"><span class="icon">◈</span><span class="t-s8">جدول الإجراءات · ACTION TABLE</span></div>
+  <div class="action-wrap">
+    <table style="min-width:700px;">
+      <thead>
+        <tr>
+          <th class="t-at1">الإطار الزمني</th>
+          <th class="t-at2">التحيز</th>
+          <th class="t-at3">دخول USD</th>
+          <th class="t-at4">دخول AED</th>
+          <th class="t-at5">الهدف</th>
+          <th class="t-at6">وقف الخسارة</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="t-a1r">قصير (1–7 أيام)</td>
+          <td><span class="bias-tag bias-bear">هبوطي</span></td>
+          <td>$4,516 مقاومة</td>
+          <td>16,584 د.إ</td>
+          <td class="snap-bear">$4,325</td>
+          <td style="color:#FB923C;">$4,580</td>
+        </tr>
+        <tr>
+          <td class="t-a2r">متوسط (30–60 يوماً)</td>
+          <td><span class="bias-tag bias-neu">انتظار</span></td>
+          <td>$4,200 – $4,325</td>
+          <td>15,424 – 15,882</td>
+          <td class="snap-bull">$4,695</td>
+          <td style="color:#FB923C;">$4,080</td>
+        </tr>
+        <tr>
+          <td class="t-a3r">بعيد (6–12 شهراً)</td>
+          <td><span class="bias-tag bias-bull">صاعد</span></td>
+          <td>$4,000 – $4,200</td>
+          <td>14,690 – 15,424</td>
+          <td class="snap-bull">$5,200</td>
+          <td style="color:#FB923C;">$3,800</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- VERDICT -->
+  <div class="section-title"><span class="icon">◈</span><span class="t-s9">الحكم النهائي · FINAL VERDICT</span></div>
+  <div class="verdict-card">
+    <div class="verdict-text t-verdict">
+      الذهب في منطقة تصحيح حادة بعد فقدان ٢٠٪ من ذروته، تحت ضغط مزدوج من الفيدرالي المتشدد ومخاوف التضخم، بينما تُوفر الأزمة الإيرانية دعماً جيوسياسياً غير كافٍ لقلب الاتجاه — المستثمر الاستراتيجي يُراكم على دفعات بين $4,000 – $4,300 بأفق 12 شهراً.
+    </div>
+    <div class="verdict-tags">
+      <span class="vtag vt-bear t-vt1">هبوطي قصير الأجل</span>
+      <span class="vtag vt-blue t-vt2">انتظار متوسط الأجل</span>
+      <span class="vtag vt-gold t-vt3">مراكمة على الهبوط</span>
+      <span class="vtag vt-orange t-vt4">توقعات التضخم مرتفعة</span>
+      <span class="vtag vt-bull t-vt5">دعم استراتيجي $4,000</span>
+    </div>
+  </div>
+
+  <!-- SYSTEM PROMPT -->
+  <div class="section-title"><span class="icon">◈</span><span>System Prompt · بروتوكول التحليل</span></div>
+  <details>
+    <div class="prompt-box">
+      <summary>عرض بروتوكول التحليل المدمج · Show Embedded Analysis Protocol</summary>
+      <pre id="promptText"></pre>
+    </div>
+  </details>
+
+  <div class="glow-divider"></div>
+  <div class="footer">XAU/USD Gold Market Dashboard · تحليل مخصص للمستثمر الإماراتي · 1 USD = 3.6725 AED (ثابت) · <span id="footerTime"></span></div>
+
+</div><!-- /container -->
+
+<script>
+// ═══════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════
+const AED_PEG = 3.6725;
+const FALLBACK_PRICE = 4473.38;
+const PREV_CLOSE = 4492.99;
+const REFRESH_SEC = 300;
+
+let currentPrice = FALLBACK_PRICE;
+let isLiquid = false;
+let isAR = true;
+let countdown = REFRESH_SEC;
+let countdownTimer, refreshTimer;
+let charts = {};
+
+// ═══════════════════════════════════
+// TRANSLATIONS
+// ═══════════════════════════════════
+const T = {
+  ar: {
+    kicker:'تحليل سوق الذهب · مخصص للمستثمر الإماراتي',
+    sub:'بيانات حية — تحديث تلقائي كل ٥ دقائق · Live Data — Auto-Refreshes Every 5 Min',
+    s1:'لمحة سريعة · SNAPSHOT', s2:'جدول أسعار الذهب بالدرهم الإماراتي · AED CONVERSION TABLE',
+    s3:'الرسوم البيانية · CHARTS', s4:'أهم ٣ عوامل محركة · TOP 3 DRIVING FACTORS',
+    s5:'المستويات التقنية · TECHNICAL LEVELS', s6:'خواتم الاحتمالية · PROBABILITY RINGS',
+    s7:'سيناريوهات المخاطر · RISK SCENARIOS', s8:'جدول الإجراءات · ACTION TABLE',
+    s9:'الحكم النهائي · FINAL VERDICT',
+    priceLabel:'سعر الذهب الآني XAU/USD', changeLabel:'التغيير اليوم',
+    wkLabel:'نطاق ٥٢ أسبوعاً', ddLabel:'التراجع من الذروة',
+    th0:'الوحدة',
+    c1:'تاريخ السعر — ٦ أشهر (USD + AED)', c2:'توزيع العوامل المحركة',
+    c3:'سعر الغرام بالدرهم — حسب العيار', c4:'مستويات الدعم والمقاومة', c5:'توقعات السيناريوهات — نهاية ٢٠٢٦',
+    f1n:'الفيدرالي الأمريكي والتضخم', f2n:'التوترات الجيوسياسية — إيران وهرمز', f3n:'مؤشر الدولار DXY وتدفقات ETF',
+    f1b:'هبوطي', f2b:'متضارب', f3b:'هبوطي',
+    p1tf:'المدى القصير · SHORT-TERM (1–7 أيام)', p2tf:'المدى المتوسط · MID-TERM (30–60 يوماً)', p3tf:'المدى البعيد · LONG-TERM (6–12 شهراً)',
+    p1r:'ضغط من الفيدرالي المتشدد وبيانات التضخم القادمة. الذهب يتداول تحت مستويات مفصلية. التحيز الهبوطي في حالة غياب محفزات جيوسياسية جديدة.',
+    p2r:'التطورات الجيوسياسية مع إيران وعمليات البنوك المركزية قد تُعيد التوازن. الطلب الفيزيائي من الهند والصين عند مستويات سعرية حالية محتمل يُوفر دعماً.',
+    p3r:'الإطار الكلي لا يزال داعماً: ديون حكومية ضخمة، مشتريات بنوك مركزية مستمرة، وتراجع متوقع في قوة الدولار على المدى البعيد. الذهب استراتيجياً جاذب فوق $4,000.',
+    p1tgt:'نطاق المستهدف: $4,325 – $4,516', p2tgt:'نطاق المستهدف: $4,200 – $4,800', p3tgt:'نطاق المستهدف: $4,500 – $5,800',
+    pbull:'صاعد ٣٨٪', pbear:'هابط ٦٢٪', pbull2:'صاعد ٤٨٪', pbear2:'هابط ٥٢٪', pbull3:'صاعد ٦٥٪', pbear3:'هابط ٣٥٪',
+    bearTitle:'🔴 سيناريو الهبوط · BEAR CASE', bullTitle:'🟢 سيناريو الصعود · BULL CASE',
+    b1:'بيانات تضخم أمريكية (PCE/CPI) تُفاجئ بارتفاع فوق 4.5٪، ما يُعزز خطاب الفيدرالي المتشدد ويرفع العائدات الحقيقية بشكل حاد.',
+    b2:'التوصل لوقف إطلاق نار في النزاع الإيراني يُزيل علاوة المخاطر الجيوسياسية من الأسواق بشكل مفاجئ.',
+    b3:'كسر مستوى الدعم $4,325 بإغلاق أسبوعي واضح يُفتح الباب لاختبار $4,081 ثم $3,870.',
+    b4:'موجة تصفية إجبارية من صناديق الرافعة المالية تُضاعف الضغط، مع انعدام الطلب الفيزيائي الموسمي في مرحلة الربع الثاني.',
+    g1:'تصعيد عسكري جوهري في منطقة هرمز أو ضربات تطال البنية النفطية السعودية تُشعل موجة ملاذ آمن استثنائية.',
+    g2:'تراجع مفاجئ في بيانات سوق العمل يُضطر الفيدرالي لتلطيف خطابه وفتح باب خفض الفائدة مجدداً.',
+    g3:'تراكم ضخم من بنوك مركزية (الصين، روسيا، الهند، تركيا) يتجاوز التوقعات ويُغير توازن العرض والطلب.',
+    g4:'تراجع DXY بشكل حاد تحت مستويات 100 نقطة يُعيد جاذبية الذهب للمشترين الأجانب ويُحرك موجة صعود.',
+    at1:'الإطار الزمني', at2:'التحيز', at3:'دخول USD', at4:'دخول AED', at5:'الهدف', at6:'وقف الخسارة',
+    a1r:'قصير (1–7 أيام)', a2r:'متوسط (30–60 يوماً)', a3r:'بعيد (6–12 شهراً)',
+    verdict:'الذهب في منطقة تصحيح حادة بعد فقدان ٢٠٪ من ذروته، تحت ضغط مزدوج من الفيدرالي المتشدد ومخاوف التضخم، بينما تُوفر الأزمة الإيرانية دعماً جيوسياسياً غير كافٍ لقلب الاتجاه — المستثمر الاستراتيجي يُراكم على دفعات بين $4,000 – $4,300 بأفق 12 شهراً.',
+    vt1:'هبوطي قصير الأجل', vt2:'انتظار متوسط الأجل', vt3:'مراكمة على الهبوط', vt4:'توقعات التضخم مرتفعة', vt5:'دعم استراتيجي $4,000',
+    refresh:'تحديث', usingCache:'استخدام آخر سعر متاح',
+    f1:'<p>رفعت منظمة OECD توقعات التضخم الأمريكي إلى 4.2٪ مقارنةً بهدف الفيدرالي 2٪، مما أقنع الأسواق بأن خفض الفائدة ليس وارداً في 2026. أدوات CME FedWatch تشير إلى احتمال 50٪+ لرفع إضافي بنهاية العام — وهو سيناريو سلبي كلاسيكي للذهب.</p><p>الذهب لا يدفع فوائد، لذا ارتفاع التكلفة الفرصية (العائد الحقيقي للسندات) يُحوّل رأس المال نحو الدولار والخزينة. الدولار القوي يُرخّص الذهب بالعملات الأخرى ويُقلص الطلب الخارجي.</p><p>ما يُلغي هذا العامل: بيانات تضخم أدنى من التوقعات، أو هدوء في سوق العمل يضطر الفيدرالي للتراجع عن لهجته المتشددة.</p>',
+    f2:'<p>الضربات الأمريكية والإسرائيلية على إيران رفعت أسعار النفط وأسعار التأمين البحري في مضيق هرمز. المفارقة: الذهب لم يرتفع كما يُتوقع — لأن المستثمرين فضّلوا الدولار وسندات الخزينة كملاذ أكثر سيولة.</p><p>التصعيد دفع أسواق الخليج هبوطاً وأقلص الشهية على المخاطرة عالمياً، لكنه رفع توقعات التضخم عبر النفط (WTI فوق $90)، مما يُعزز الحجة المتشددة للفيدرالي ويزيد الضغط على الذهب.</p><p>السيناريو الصاعد: إغلاق هرمز فعلياً سيُعيد الذهب دفة القيادة كملاذ آمن ويدفعه فوق $4,800 بسرعة.</p>',
+    f3:'<p>الدولار يختبر مناطق مقاومة رئيسية. تدفقات خروج من صناديق ETF الذهبية (GLD SPDR) تواصل الضغط على السعر. المتداولون يرون أي ارتداد في الذهب فرصة بيع في الوقت الراهن.</p><p>الفائدة الحقيقية (اسمية ناقص التضخم) ارتفعت إلى مستويات لم تُشاهَد منذ 2007 في بعض أجزاء منحنى العائد. هذا يُقلص جاذبية الذهب غير المُدرّ للفوائد.</p><p>ما يُغيّر المعادلة: تراجع DXY تحت 100 أو تحول صناديق ETF الكبرى إلى تراكم الذهب من جديد.</p>',
+  },
+  en: {
+    kicker:'Gold Market Analysis · UAE Investor Edition',
+    sub:'Live Data — Auto-Refreshes Every 5 Min',
+    s1:'SNAPSHOT', s2:'AED CONVERSION TABLE', s3:'CHARTS', s4:'TOP 3 DRIVING FACTORS',
+    s5:'TECHNICAL LEVELS', s6:'PROBABILITY RINGS', s7:'RISK SCENARIOS', s8:'ACTION TABLE', s9:'FINAL VERDICT',
+    priceLabel:'XAU/USD Spot Price', changeLabel:"Today's Change",
+    wkLabel:'52-Week Range', ddLabel:'Drawdown from Peak',
+    th0:'Unit',
+    c1:'Price History — 6 Months (USD + AED)', c2:'Factor Weight Distribution',
+    c3:'Gram Price by Karat in AED', c4:'Support & Resistance Levels', c5:'Scenario Forecast — End 2026',
+    f1n:'Fed Policy & Inflation', f2n:'Geopolitical Tensions — Iran & Hormuz', f3n:'DXY & ETF Flows',
+    f1b:'Bearish', f2b:'Mixed', f3b:'Bearish',
+    p1tf:'SHORT-TERM (1–7 Days)', p2tf:'MID-TERM (30–60 Days)', p3tf:'LONG-TERM (6–12 Months)',
+    p1r:'Hawkish Fed and upcoming inflation data create headwinds. Gold trading below key pivots with bearish bias absent new geopolitical triggers.',
+    p2r:'Iran developments and central bank operations may rebalance flows. Physical demand from India/China at current prices may provide a floor.',
+    p3r:'Macro backdrop remains supportive: sovereign debt, central bank buying, long-term dollar weakness. Gold strategically attractive above $4,000.',
+    p1tgt:'Target Range: $4,325 – $4,516', p2tgt:'Target Range: $4,200 – $4,800', p3tgt:'Target Range: $4,500 – $5,800',
+    pbull:'Bull 38%', pbear:'Bear 62%', pbull2:'Bull 48%', pbear2:'Bear 52%', pbull3:'Bull 65%', pbear3:'Bear 35%',
+    bearTitle:'🔴 BEAR CASE', bullTitle:'🟢 BULL CASE',
+    b1:'US inflation data (PCE/CPI) surprises to the upside above 4.5%, reinforcing hawkish Fed rhetoric and sharply raising real yields.',
+    b2:'Iran ceasefire removes geopolitical risk premium from markets suddenly, triggering a sharp reversal of safe-haven flows.',
+    b3:'$4,325 support breaks on a weekly close, opening the path to $4,081 and then $3,870.',
+    b4:'Forced leveraged fund liquidation amplifies sell-off; no seasonal physical demand in Q2 to absorb it.',
+    g1:'Major military escalation near Hormuz or strikes on Saudi oil infrastructure ignite an exceptional safe-haven wave.',
+    g2:'Sudden labor market weakness forces the Fed to soften hawkish rhetoric and reopens rate-cut expectations.',
+    g3:'Massive central bank accumulation (China, Russia, India, Turkey) exceeds forecasts and shifts the supply/demand balance.',
+    g4:'Sharp DXY decline below 100 restores gold\'s appeal for foreign buyers and ignites an upside move.',
+    at1:'Timeframe', at2:'Bias', at3:'Entry USD', at4:'Entry AED', at5:'Target', at6:'Stop-Loss',
+    a1r:'Short (1–7 Days)', a2r:'Mid (30–60 Days)', a3r:'Long (6–12 Months)',
+    verdict:'Gold is in a sharp correction after losing 20% from its peak, under dual pressure from a hawkish Fed and inflation fears, while the Iran crisis provides insufficient geopolitical support to reverse the trend — strategic investors accumulate in tranches between $4,000–$4,300 on a 12-month horizon.',
+    vt1:'Short-Term Bearish', vt2:'Mid-Term Wait', vt3:'Accumulate on Dips', vt4:'Elevated Inflation Risk', vt5:'$4,000 Strategic Floor',
+    refresh:'Refresh', usingCache:'Using last available price',
+    f1:'<p>OECD raised US inflation forecast to 4.2% vs the Fed\'s 2% target, convincing markets no rate cuts are coming in 2026. CME FedWatch shows 50%+ probability of a rate hike by year-end — classically bearish for gold.</p><p>Gold pays no interest, so rising opportunity cost (real bond yields) diverts capital to dollars and Treasuries. A strong dollar makes gold more expensive in other currencies, reducing foreign demand.</p><p>Invalidation: inflation data surprises to the downside, or labor market softness forces the Fed to walk back its hawkish stance.</p>',
+    f2:'<p>US and Israeli strikes on Iran have raised oil prices and Hormuz marine insurance premiums. Paradoxically, gold has not rallied as expected — investors preferred dollars and Treasuries as more liquid safe havens.</p><p>Escalation drove Gulf equities lower and cut global risk appetite. But it also lifted inflation expectations via oil (WTI above $90), reinforcing the hawkish Fed case and adding pressure to gold.</p><p>Bull scenario: A genuine Hormuz closure or direct Iranian oil infrastructure strikes would rapidly restore gold\'s safe-haven role above $4,800.</p>',
+    f3:'<p>The dollar is testing major resistance zones. GLD SPDR ETF outflows continue to pressure prices. Traders view any gold bounce as a selling opportunity at present.</p><p>Real interest rates (nominal minus inflation) have risen to levels unseen since 2007 on parts of the yield curve. This dramatically reduces the appeal of non-yielding gold.</p><p>Flip signal: DXY breaking below 100, or major ETF funds pivoting back to gold accumulation — either would signal a systemic shift in market sentiment.</p>',
+  }
+};
+
+// ═══════════════════════════════════
+// LANG TOGGLE
+// ═══════════════════════════════════
+function applyLang() {
+  const t = isAR ? T.ar : T.en;
+  const body = document.body;
+  body.dir = isAR ? 'rtl' : 'ltr';
+  body.lang = isAR ? 'ar' : 'en';
+  if(!isAR) body.classList.add('ltr'); else body.classList.remove('ltr');
+
+  const map = {
+    't-kicker':t.kicker, 't-sub':t.sub,
+    't-s1':t.s1,'t-s2':t.s2,'t-s3':t.s3,'t-s4':t.s4,'t-s5':t.s5,'t-s6':t.s6,'t-s7':t.s7,'t-s8':t.s8,'t-s9':t.s9,
+    't-price-label':t.priceLabel,'t-change-label':t.changeLabel,'t-52wk-label':t.wkLabel,'t-dd-label':t.ddLabel,
+    't-th0':t.th0,
+    't-c1':t.c1,'t-c2':t.c2,'t-c3':t.c3,'t-c4':t.c4,'t-c5':t.c5,
+    't-f1n':t.f1n,'t-f2n':t.f2n,'t-f3n':t.f3n,
+    't-f1b':t.f1b,'t-f2b':t.f2b,'t-f3b':t.f3b,
+    't-p1tf':t.p1tf,'t-p2tf':t.p2tf,'t-p3tf':t.p3tf,
+    't-p1r':t.p1r,'t-p2r':t.p2r,'t-p3r':t.p3r,
+    't-p1tgt':t.p1tgt,'t-p2tgt':t.p2tgt,'t-p3tgt':t.p3tgt,
+    't-pbull':t.pbull,'t-pbear':t.pbear,'t-pbull2':t.pbull2,'t-pbear2':t.pbear2,'t-pbull3':t.pbull3,'t-pbear3':t.pbear3,
+    't-bear-title':t.bearTitle,'t-bull-title':t.bullTitle,
+    't-b1':t.b1,'t-b2':t.b2,'t-b3':t.b3,'t-b4':t.b4,
+    't-g1':t.g1,'t-g2':t.g2,'t-g3':t.g3,'t-g4':t.g4,
+    't-at1':t.at1,'t-at2':t.at2,'t-at3':t.at3,'t-at4':t.at4,'t-at5':t.at5,'t-at6':t.at6,
+    't-a1r':t.a1r,'t-a2r':t.a2r,'t-a3r':t.a3r,
+    't-verdict':t.verdict,
+    't-vt1':t.vt1,'t-vt2':t.vt2,'t-vt3':t.vt3,'t-vt4':t.vt4,'t-vt5':t.vt5,
+    't-refresh':t.refresh,
+    't-f1':t.f1,'t-f2':t.f2,'t-f3':t.f3,
+  };
+  for(const [cls,txt] of Object.entries(map)){
+    document.querySelectorAll('.'+cls).forEach(el=>{ el.innerHTML=txt; });
+  }
+}
+function toggleLang(){ isAR=!isAR; applyLang(); }
+
+// ═══════════════════════════════════
+// LIQUID GLASS TOGGLE
+// ═══════════════════════════════════
+function toggleLiquid(){
+  isLiquid=!isLiquid;
+  document.body.classList.toggle('liquid',isLiquid);
+  document.getElementById('btnLiquid').classList.toggle('active',isLiquid);
+  Object.values(charts).forEach(c=>{ if(c) try{c.update();}catch(e){} });
+}
+
+// ═══════════════════════════════════
+// AED TABLE
+// ═══════════════════════════════════
+const UNITS = [
+  ['1g / ١ غرام', 1/31.1035],
+  ['5g / ٥ غرام', 5/31.1035],
+  ['10g / ١٠ غرام', 10/31.1035],
+  ['1 Tola / ١ تولة (11.66g)', 11.66/31.1035],
+  ['½ oz / نصف أوقية', 0.5],
+  ['1 oz / أوقية', 1],
+  ['50g / ٥٠ غرام', 50/31.1035],
+  ['100g / ١٠٠ غرام', 100/31.1035],
+  ['1 kg / كيلوغرام', 1000/31.1035],
+];
+function fmt(n,d=0){ return n.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d}); }
+function buildTable(price){
+  const tbody = document.getElementById('aedBody');
+  tbody.innerHTML = '';
+  UNITS.forEach(([label,mult])=>{
+    const usd = price*mult;
+    const aed24 = usd*AED_PEG;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${label}</td>
+      <td>$${fmt(usd,2)}</td>
+      <td class="t-24">${fmt(aed24,0)}</td>
+      <td class="t-21">${fmt(aed24*0.875,0)}</td>
+      <td class="t-18">${fmt(aed24*0.75,0)}</td>
+      <td class="t-14">${fmt(aed24*0.583,0)}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+// ═══════════════════════════════════
+// UPDATE PRICE DISPLAY
+// ═══════════════════════════════════
+function updatePriceDisplay(price, cached){
+  currentPrice = price;
+  const chg = price - PREV_CLOSE;
+  const pct = (chg/PREV_CLOSE*100);
+  document.getElementById('livePrice').textContent = '$'+fmt(price,2);
+  const pctEl = document.getElementById('livePct');
+  pctEl.textContent = (pct>=0?'+':'')+pct.toFixed(2)+'%';
+  pctEl.className = 'snap-value '+(pct>=0?'snap-bull':'snap-bear');
+  document.getElementById('liveChg').textContent = (chg>=0?'+':'')+'$'+fmt(Math.abs(chg),2)+' from $'+fmt(PREV_CLOSE,2);
+  const aedOz = price*AED_PEG;
+  document.getElementById('priceAED').textContent = fmt(aedOz,0);
+  document.getElementById('aedCurrentLevel').textContent = fmt(aedOz,0)+' د.إ';
+  buildTable(price);
+  // status dot
+  const dot = document.getElementById('statusDot');
+  dot.style.background = cached ? '#FCD34D' : '#4ADE80';
+  if(cached){
+    // show using cache message
+    const sub = document.getElementById('livePriceSub');
+    sub.innerHTML = (isAR?'استخدام آخر سعر متاح':'Using last available price')+' · ١ أوقية = <span id="priceAED">'+fmt(aedOz,0)+'</span> د.إ';
+  }
+  updateCharts(price);
+  updateFooter();
+}
+
+// ═══════════════════════════════════
+// CHARTS
+// ═══════════════════════════════════
+const GOLD_CLR = '#C9A84C';
+const GOLD2_CLR = '#E8C96A';
+const BEAR_CLR = '#F87171';
+const BULL_CLR = '#4ADE80';
+const BLUE_CLR = '#60A5FA';
+const GRID_CLR = 'rgba(201,168,76,0.08)';
+const TEXT_CLR = '#A8998A';
+
+function chartDefaults(){
+  Chart.defaults.color = TEXT_CLR;
+  Chart.defaults.borderColor = GRID_CLR;
+  Chart.defaults.font.family = "'IBM Plex Mono', monospace";
+  Chart.defaults.font.size = 10;
+}
+chartDefaults();
+
+// Generate 6-month price history
+function genHistory(endPrice){
+  const pts = 180;
+  const data = [], labels = [], aedData = [];
+  let p = endPrice * 1.28; // ~peak
+  const now = new Date();
+  for(let i=pts;i>=0;i--){
+    const d = new Date(now); d.setDate(d.getDate()-i);
+    labels.push(d.toLocaleDateString('en-GB',{month:'short',day:'numeric'}));
+    if(i>150) p = endPrice*1.28 - (i-150)*2;
+    else if(i>100) p = endPrice*1.28 + (150-i)*5;
+    else if(i>40) p = endPrice*1.15 - (100-i)*8;
+    else p = endPrice + (40-i)*(endPrice*0.0015);
+    p += (Math.random()-0.5)*30;
+    p = Math.max(endPrice*0.85, Math.min(endPrice*1.32, p));
+    data.push(+p.toFixed(2));
+    aedData.push(+(p*AED_PEG).toFixed(2));
+  }
+  data[data.length-1] = endPrice;
+  aedData[aedData.length-1] = +(endPrice*AED_PEG).toFixed(2);
+  return {labels,data,aedData};
+}
+
+function initCharts(price){
+  const hist = genHistory(price);
+
+  // Chart 1: Price history
+  const ctx1 = document.getElementById('chartHistory').getContext('2d');
+  if(charts.history) charts.history.destroy();
+  charts.history = new Chart(ctx1,{
+    type:'line',
+    data:{
+      labels:hist.labels,
+      datasets:[
+        {label:'USD',data:hist.data,borderColor:GOLD_CLR,borderWidth:2,pointRadius:0,fill:true,
+         backgroundColor:(ctx)=>{const g=ctx.chart.ctx.createLinearGradient(0,0,0,300);g.addColorStop(0,'rgba(201,168,76,0.25)');g.addColorStop(1,'transparent');return g;},
+         yAxisID:'y'},
+        {label:'AED',data:hist.aedData,borderColor:BLUE_CLR,borderWidth:1.5,pointRadius:0,fill:false,borderDash:[4,4],yAxisID:'y2'}
+      ]
+    },
+    options:{
+      responsive:true, animation:{duration:600},
+      plugins:{legend:{labels:{color:TEXT_CLR,boxWidth:12}}},
+      scales:{
+        x:{ticks:{maxTicksLimit:8,color:TEXT_CLR},grid:{color:GRID_CLR}},
+        y:{ticks:{color:GOLD_CLR,callback:v=>'$'+v.toLocaleString()},grid:{color:GRID_CLR},position:'left'},
+        y2:{ticks:{color:BLUE_CLR,callback:v=>v.toLocaleString()+' AED'},grid:{display:false},position:'right'}
+      }
+    }
+  });
+
+  // Chart 2: Factor doughnut
+  const ctx2 = document.getElementById('chartFactors').getContext('2d');
+  if(charts.factors) charts.factors.destroy();
+  charts.factors = new Chart(ctx2,{
+    type:'doughnut',
+    data:{
+      labels:['Fed / التضخم (40%)','إيران / هرمز (35%)','DXY / ETF (25%)'],
+      datasets:[{data:[40,35,25],backgroundColor:['rgba(248,113,113,0.7)','rgba(251,146,60,0.7)','rgba(96,165,250,0.7)'],
+        borderColor:['rgba(248,113,113,0.3)','rgba(251,146,60,0.3)','rgba(96,165,250,0.3)'],borderWidth:2}]
+    },
+    options:{
+      responsive:true, cutout:'68%',
+      plugins:{legend:{position:'bottom',labels:{color:TEXT_CLR,boxWidth:12,font:{size:10}}}}
+    }
+  });
+
+  // Chart 3: Karat bar
+  const gPerOz = 31.1035;
+  const pGram24 = (price/gPerOz)*AED_PEG;
+  const ctx3 = document.getElementById('chartKarat').getContext('2d');
+  if(charts.karat) charts.karat.destroy();
+  charts.karat = new Chart(ctx3,{
+    type:'bar',
+    data:{
+      labels:['24K','21K','18K','14K'],
+      datasets:[{
+        label:'AED/g',
+        data:[pGram24, pGram24*0.875, pGram24*0.75, pGram24*0.583].map(v=>+v.toFixed(2)),
+        backgroundColor:['rgba(201,168,76,0.75)','rgba(192,160,96,0.75)','rgba(160,136,80,0.7)','rgba(136,112,72,0.7)'],
+        borderColor:[GOLD_CLR,'#C0A060','#A08850','#887048'],borderWidth:2,borderRadius:6
+      }]
+    },
+    options:{
+      responsive:true,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{ticks:{color:TEXT_CLR},grid:{display:false}},
+        y:{ticks:{color:GOLD_CLR,callback:v=>v.toFixed(0)+' AED'},grid:{color:GRID_CLR}}
+      }
+    }
+  });
+
+  // Chart 4: S/R horizontal bar
+  const levels = [
+    {l:'$5,595 الذروة',v:5595,c:'rgba(248,113,113,0.7)'},
+    {l:'$5,013 مقاومة',v:5013,c:'rgba(248,113,113,0.5)'},
+    {l:'$4,695 فيب 61.8',v:4695,c:'rgba(251,146,60,0.6)'},
+    {l:'$4,473 ● الحالي',v:price,c:GOLD_CLR},
+    {l:'$4,325 دعم ١',v:4325,c:'rgba(96,165,250,0.6)'},
+    {l:'$4,081 MA200',v:4081,c:'rgba(74,222,128,0.6)'},
+    {l:'$4,000 نفسي',v:4000,c:'rgba(74,222,128,0.5)'},
+    {l:'$2,957 قاع ٥٢أسبوع',v:2957,c:'rgba(74,222,128,0.3)'},
+  ];
+  const ctx4 = document.getElementById('chartLevels').getContext('2d');
+  if(charts.levels) charts.levels.destroy();
+  charts.levels = new Chart(ctx4,{
+    type:'bar',
+    data:{
+      labels:levels.map(l=>l.l),
+      datasets:[{data:levels.map(l=>l.v),backgroundColor:levels.map(l=>l.c),borderWidth:0,borderRadius:4}]
+    },
+    options:{
+      indexAxis:'y', responsive:true,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{ticks:{color:TEXT_CLR,callback:v=>'$'+v.toLocaleString()},grid:{color:GRID_CLR},min:2500,max:6000},
+        y:{ticks:{color:TEXT_CLR,font:{size:9}},grid:{display:false}}
+      }
+    }
+  });
+
+  // Chart 5: Scenario forecast
+  const months = ['Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const bull=[], base=[], bear=[];
+  let bp=price,bap=price,bep=price;
+  months.forEach((_,i)=>{
+    bp+=(i===0?0:180+Math.random()*60); bull.push(+bp.toFixed(0));
+    bap+=(i===0?0:30+Math.random()*40); base.push(+bap.toFixed(0));
+    bep-=(i===0?0:60+Math.random()*80); bear.push(+bep.toFixed(0));
+  });
+  const ctx5 = document.getElementById('chartScenario').getContext('2d');
+  if(charts.scenario) charts.scenario.destroy();
+  charts.scenario = new Chart(ctx5,{
+    type:'line',
+    data:{
+      labels:months,
+      datasets:[
+        {label:'Bull',data:bull,borderColor:BULL_CLR,borderWidth:2,pointRadius:0,fill:false},
+        {label:'Base',data:base,borderColor:GOLD_CLR,borderWidth:2,pointRadius:0,fill:false,borderDash:[4,3]},
+        {label:'Bear',data:bear,borderColor:BEAR_CLR,borderWidth:2,pointRadius:0,fill:false,borderDash:[2,2]},
+      ]
+    },
+    options:{
+      responsive:true,
+      plugins:{legend:{labels:{color:TEXT_CLR,boxWidth:12}}},
+      scales:{
+        x:{ticks:{color:TEXT_CLR},grid:{color:GRID_CLR}},
+        y:{ticks:{color:TEXT_CLR,callback:v=>'$'+v.toLocaleString()},grid:{color:GRID_CLR}}
+      }
+    }
+  });
+}
+
+function updateCharts(price){
+  if(!charts.history){ initCharts(price); return; }
+  // update last data point
+  const hist = genHistory(price);
+  charts.history.data.datasets[0].data = hist.data;
+  charts.history.data.datasets[1].data = hist.aedData;
+  charts.history.update('none');
+
+  const gPerOz = 31.1035;
+  const pGram24 = (price/gPerOz)*AED_PEG;
+  charts.karat.data.datasets[0].data = [pGram24, pGram24*0.875, pGram24*0.75, pGram24*0.583].map(v=>+v.toFixed(2));
+  charts.karat.update('none');
+}
+
+// ═══════════════════════════════════
+// PROBABILITY SVG RINGS
+// ═══════════════════════════════════
+function drawRing(svgId, bullPct, color){
+  const svg = document.getElementById(svgId);
+  const bearPct = 100-bullPct;
+  const R=46, CX=60, CY=60, SW=10;
+  const circ = 2*Math.PI*R;
+  const bullArc = circ*(bullPct/100);
+  const bearArc = circ*(bearPct/100);
+  const isBull = bullPct>=50;
+  const dominant = isBull ? bullPct : bearPct;
+  const domColor = isBull ? '#4ADE80' : '#F87171';
+  const domLabel = isBull ? (document.body.lang==='ar'?'صاعد':'BULL') : (document.body.lang==='ar'?'هابط':'BEAR');
+
+  svg.innerHTML = `
+    <defs>
+      <filter id="glow${svgId}"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    </defs>
+    <circle cx="${CX}" cy="${CY}" r="${R}" fill="none" stroke="rgba(201,168,76,0.08)" stroke-width="${SW}"/>
+    <circle cx="${CX}" cy="${CY}" r="${R}" fill="none"
+      stroke="${domColor}" stroke-width="${SW}"
+      stroke-dasharray="${bullArc} ${circ}" stroke-dashoffset="${circ*0.25}"
+      stroke-linecap="round" filter="url(#glow${svgId})"
+      style="transition:stroke-dasharray 1s ease">
+      <animate attributeName="stroke-dasharray" from="0 ${circ}" to="${bullArc} ${circ}" dur="1.2s" fill="freeze"/>
+    </circle>
+    <circle cx="${CX}" cy="${CY}" r="${R}" fill="none"
+      stroke="rgba(248,113,113,0.3)" stroke-width="${SW}"
+      stroke-dasharray="${bearArc} ${circ}" stroke-dashoffset="${circ*0.25 - bullArc}"
+      stroke-linecap="round"/>
+    <text x="${CX}" y="${CY-8}" text-anchor="middle" fill="${domColor}" font-size="18" font-weight="600" font-family="IBM Plex Mono">${dominant}%</text>
+    <text x="${CX}" y="${CY+8}" text-anchor="middle" fill="#A8998A" font-size="9" font-family="IBM Plex Mono">${domLabel}</text>
+  `;
+}
+function drawAllRings(){
+  drawRing('ring1',38,'#F87171');
+  drawRing('ring2',48,'#F87171');
+  drawRing('ring3',65,'#4ADE80');
+}
+
+// ═══════════════════════════════════
+// COUNTDOWN
+// ═══════════════════════════════════
+function startCountdown(){
+  clearInterval(countdownTimer);
+  countdown = REFRESH_SEC;
+  countdownTimer = setInterval(()=>{
+    countdown--;
+    const m = Math.floor(countdown/60);
+    const s = (countdown%60).toString().padStart(2,'0');
+    document.getElementById('countdown').textContent = m+':'+s;
+    const fill = document.getElementById('progressFill');
+    fill.style.width = (countdown/REFRESH_SEC*100)+'%';
+    if(countdown<=0){ clearInterval(countdownTimer); doRefresh(false); }
+  },1000);
+}
+
+// ═══════════════════════════════════
+// API REFRESH
+// ═══════════════════════════════════
+async function doRefresh(manual){
+  const dot = document.getElementById('statusDot');
+  dot.style.background = '#FCD34D';
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        tools:[{type:'web_search_20250305',name:'web_search'}],
+        messages:[{
+          role:'user',
+          content:'Search the web and return ONLY a JSON object with no other text: {"price":CURRENT_XAU_USD_PRICE} where CURRENT_XAU_USD_PRICE is the current gold spot price in USD as a number. Example: {"price":4473.38}'
+        }]
+      })
+    });
+    if(!resp.ok) throw new Error('API '+resp.status);
+    const data = await resp.json();
+    let priceFound = null;
+    const fullText = data.content.map(b=>b.text||'').join(' ');
+    const match = fullText.match(/"price"\s*:\s*(\d{3,6}(?:\.\d{1,4})?)/);
+    if(match) priceFound = parseFloat(match[1]);
+    if(!priceFound || priceFound < 1000 || priceFound > 15000) throw new Error('Invalid price');
+    updatePriceDisplay(priceFound, false);
+  } catch(e) {
+    updatePriceDisplay(currentPrice, true);
+  }
+  startCountdown();
+  updateFooter();
+}
+
+// ═══════════════════════════════════
+// FOOTER
+// ═══════════════════════════════════
+function updateFooter(){
+  const now = new Date();
+  document.getElementById('footerTime').textContent = 'Updated: '+now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+}
+
+// ═══════════════════════════════════
+// PROMPT BOX
+// ═══════════════════════════════════
+document.getElementById('promptText').textContent = `You are an elite AI system specialized in gold (Au) market analysis combining:
+• Geological factors (reserves, mining output, depletion, extraction costs)
+• Macroeconomic factors (Fed rates, DXY, inflation, central bank buying)
+• Technical analysis (RSI, MACD, moving averages, support/resistance, Fibonacci)
+• Geopolitical factors (wars, sanctions, trade restrictions, safe-haven flows)
+• ETF flows (SPDR GLD) and real interest rates (nominal - inflation)
+
+MANDATORY OUTPUT STRUCTURE:
+1. SNAPSHOT: Live XAU/USD price + % change + 52-week high/low + drawdown from peak
+2. AED CONVERSION TABLE (1 USD = 3.6725 AED): 1g · 5g · 10g · 1 tola · 0.5oz · 1oz · 50g · 100g · 1kg
+3. TOP 3 FACTORS with % weight (summing to 100%)
+4. TECHNICAL LEVELS (USD and AED)
+5. PROBABILITY RINGS (short/mid/long-term)
+6. RISK SCENARIOS (4 bear + 4 bull triggers)
+7. ACTION TABLE (frame | bias | entry | target | stop-loss)
+8. FINAL VERDICT + 5 color-coded decision tags
+
+Use web_search to get the REAL current XAU/USD price before responding.`;
+
+// ═══════════════════════════════════
+// INIT
+// ═══════════════════════════════════
+window.addEventListener('load', ()=>{
+  updatePriceDisplay(FALLBACK_PRICE, false);
+  initCharts(FALLBACK_PRICE);
+  drawAllRings();
+  applyLang();
+  startCountdown();
+  updateFooter();
+  // Try live price immediately
+  doRefresh(false);
+});
+</script>
+</body>
+</html>
